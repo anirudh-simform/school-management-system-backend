@@ -14,7 +14,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model NewUser {
-  id   Int    @id @default(autoincrement())
-  name String
+model Department {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  instructors Instructor[]
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  email     String
+  phone     String
+  gender    Gender
+  password  String
+  dob       DateTime
+  address   String
+}
+
+model Instructor {
+  id           Int        @id @default(autoincrement())
+  firstname    String
+  lastname     String
+  email        String
+  phone        String
+  gender       Gender
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  password     String
+  dob          DateTime
+  address      String
+}
+
+model Student {
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  dob       DateTime
+  gender    Gender
+  address   String
+  phone     String
+  email     String
+  password  String
+}
+
+enum Gender {
+  Male
+  Female
 }
