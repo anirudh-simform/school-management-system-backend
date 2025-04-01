@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Admin" ALTER COLUMN "dob" SET DATA TYPE DATE;
+
+-- AlterTable
+ALTER TABLE "Instructor" ALTER COLUMN "dob" SET DATA TYPE DATE;
+
+-- AlterTable
+ALTER TABLE "Student" ALTER COLUMN "dob" SET DATA TYPE DATE;

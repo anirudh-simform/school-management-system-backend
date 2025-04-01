@@ -24,11 +24,11 @@ model Admin {
   id        Int      @id @default(autoincrement())
   firstname String
   lastname  String
-  email     String
+  email     String   @unique
   phone     String
   gender    Gender
   password  String
-  dob       DateTime
+  dob       DateTime @db.Date
   address   String
 }
 
@@ -36,13 +36,13 @@ model Instructor {
   id           Int        @id @default(autoincrement())
   firstname    String
   lastname     String
-  email        String
+  email        String     @unique
   phone        String
   gender       Gender
   departmentId Int
   department   Department @relation(fields: [departmentId], references: [id])
   password     String
-  dob          DateTime
+  dob          DateTime   @db.Date
   address      String
 }
 
@@ -50,11 +50,11 @@ model Student {
   id        Int      @id @default(autoincrement())
   firstname String
   lastname  String
-  dob       DateTime
+  dob       DateTime @db.Date
   gender    Gender
   address   String
   phone     String
-  email     String
+  email     String   @unique
   password  String
 }
 

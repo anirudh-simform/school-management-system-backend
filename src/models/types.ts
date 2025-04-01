@@ -1,4 +1,4 @@
-export type User = {
+type User = {
     firstname: string;
     lastname: string;
     department?: string;
@@ -10,3 +10,9 @@ export type User = {
     role: "Admin" | "Instructor" | "Student";
     address: string;
 };
+
+interface CustomError extends Error {
+    statusCode: number;
+}
+
+export { User, CustomError };
