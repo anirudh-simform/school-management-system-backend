@@ -1,6 +1,5 @@
 import { body, Meta } from "express-validator";
 import { PrismaClient } from "../../generated/prisma/index.js";
-import { Request } from "express";
 const prisma = new PrismaClient();
 const validateUserRegistration = [
     body("firstname")
