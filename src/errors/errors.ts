@@ -1,4 +1,4 @@
-class AuthenticationTokenNotFoundError extends Error {
+class AuthTokenNotFoundError extends Error {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -16,4 +16,4 @@ class EnvironmentVariableNotFoundError extends Error {
     }
 }
 
-export { AuthenticationTokenNotFoundError, EnvironmentVariableNotFoundError };
+export { AuthTokenNotFoundError, EnvironmentVariableNotFoundError };

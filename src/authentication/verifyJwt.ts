@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import {
-    AuthenticationTokenNotFoundError,
+    AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
 } from "../errors/errors.js";
 import "dotenv/config";
@@ -16,7 +16,7 @@ function verifyJwt(req: Request, res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1];
 
     if (!token) {
-        throw new AuthenticationTokenNotFoundError(
+        throw new AuthTokenNotFoundError(
             "Could not find authentication token in request,make sure you are logged in"
         );
     }
