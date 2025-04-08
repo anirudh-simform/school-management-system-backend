@@ -14,15 +14,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model School {
+  id      Int    @id @default(autoincrement())
+  name    String
+  address String
+  users   User[]
+}
+
+model SuperAdmin {
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  email     String   @unique
+  phone     String
+  dob       DateTime @db.Date
+  password  String
+}
+
 model User {
-  id               Int               @id @default(autoincrement())
-  firstname        String
-  lastname         String
-  username         String            @unique
-  phone            String
-  dob              DateTime          @db.Date
-  gender           Gender
-  role             Role
+  id        Int      @id @default(autoincrement())
+  firstname String
+  lastname  String
+  email     String   @unique
+  phone     String
+  dob       DateTime @db.Date
+  gender    Gender
+  role      Role
+  school    School   @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  password  String
+
   department       Department?       @relation(fields: [departmentId], references: [id])
   departmentId     Int?
   studentBatch     StudentBatch?     @relation(fields: [studentBatchId], references: [id])
