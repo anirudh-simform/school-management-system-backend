@@ -11,7 +11,8 @@ import { StringValue } from "ms";
  */
 function generateTokenPair(
     tokenData: { email: string },
-    accessTokenExpiry: StringValue
+    accessTokenExpiry: StringValue,
+    refreshTokenExpiry: StringValue
 ): { accessToken: string; refreshToken: string } {
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -29,7 +30,9 @@ function generateTokenPair(
     const accessToken = jwt.sign(tokenData, accessTokenSecret, {
         expiresIn: accessTokenExpiry,
     });
-    const refreshToken = jwt.sign(tokenData, refreshTokenSecret);
+    const refreshToken = jwt.sign(tokenData, refreshTokenSecret, {
+        expiresIn: refreshTokenExpiry,
+    });
 
     return { accessToken, refreshToken };
 }

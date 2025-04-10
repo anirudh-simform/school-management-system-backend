@@ -2,6 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import { type ApiError } from "../models/types.js";
 import { logger } from "../logging/logger.js";
 
+/**
+ * @param {(Error | ApiError)} err
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ */
 function handleError(
     err: Error | ApiError,
     req: Request,
