@@ -6,4 +6,15 @@ interface ApiError extends Error {
 
 type SuperAdmin = Prisma.SuperAdminCreateInput;
 
-export { type ApiError, type SuperAdmin };
+type LoginRequest = {
+    email: string;
+    password: string;
+};
+
+declare module "jsonwebtoken" {
+    export interface JwtPayload {
+        email?: string;
+    }
+}
+
+export { type ApiError, type SuperAdmin, type LoginRequest };

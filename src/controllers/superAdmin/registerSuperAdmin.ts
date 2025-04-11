@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../../generated/prisma/index.js";
-import { SuperAdmin } from "../models/types.js";
+import { PrismaClient } from "../../../generated/prisma/index.js";
+import { SuperAdmin } from "../../models/types.js";
 import * as argon2 from "argon2";
 import asyncHandler from "express-async-handler";
 import { Result, validationResult } from "express-validator";
-import { ValidationError } from "../errors/errors.js";
-import { logger } from "../logging/logger.js";
+import { ValidationError } from "../../errors/errors.js";
+import { logger } from "../../logging/logger.js";
 
 const prisma = new PrismaClient();
 

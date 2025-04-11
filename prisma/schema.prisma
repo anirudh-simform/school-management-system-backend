@@ -14,6 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Authentication
+
+model RefreshToken {
+  id     Int     @id @default(autoincrement())
+  user   User    @relation(fields: [userId], references: [email])
+  userId String
+  token  String
+  used   Boolean
+}
+
 model School {
   id      Int    @id @default(autoincrement())
   name    String
@@ -52,6 +62,7 @@ model User {
   groups           Group[]
   attendance       Attendance[]
   assignmentGrades AssignmentGrade[]
+  refreshTokens    RefreshToken[]
 }
 
 model StudentBatch {
@@ -139,6 +150,7 @@ model AssignmentGrade {
 enum Role {
   SuperAdmin
   Admin
+  SchoolSuperAdmin
   Instructor
   Student
 }
