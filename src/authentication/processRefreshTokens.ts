@@ -57,7 +57,7 @@ const processRefreshToken = asyncHandler(async function processToken(
     if (typeof decoded != "string" && decoded.email) {
         const storedToken = await prisma.refreshToken.findFirst({
             where: {
-                AND: [{ userId: decoded.email }, { token: oldRefreshToken }],
+                AND: [{ userEmail: decoded.email }, { token: oldRefreshToken }],
             },
         });
 
@@ -67,11 +67,12 @@ const processRefreshToken = asyncHandler(async function processToken(
             );
         }
 
-        // If jwt already used before delete the stored token and throw error asking to reauthenticate
+        // If jwt already has been used before, delete the stored token and throw error asking the user to reauthenticate
         if (storedToken.used) {
+            // If token is used delete all the tokens associated with user
             await prisma.refreshToken.delete({
                 where: {
-                    id: storedToken.id,
+                    userEmail: decoded.email,
                 },
             });
             throw new ReusedTokenError(
@@ -79,14 +80,38 @@ const processRefreshToken = asyncHandler(async function processToken(
             );
         }
 
+        // Update the used status of unused token
+        await prisma.refreshToken.updateMany({
+            data: {
+                used: true,
+            },
+            where: {
+                AND: [{ userEmail: decoded.email }, { token: oldRefreshToken }],
+            },
+        });
+
         const newTokens = generateTokenPair(
             { email: decoded.email },
             "1d",
             "7d"
         );
 
+        // Store new token in database
+        await prisma.refreshToken.create({
+            data: {
+                token: newTokens.refreshToken,
+                used: false,
+                userEmail: decoded.email,
+            },
+        });
+
         res.cookie("accessToken", newTokens.accessToken);
         res.cookie("refreshToken", newTokens.refreshToken);
+
+        // Add the user object to request object for the next middleware
+        req.user = decoded;
+        next();
+        return;
     }
 });
 

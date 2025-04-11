@@ -17,11 +17,12 @@ datasource db {
 // Authentication
 
 model RefreshToken {
-  id     Int     @id @default(autoincrement())
-  user   User    @relation(fields: [userId], references: [email])
-  userId String
-  token  String
-  used   Boolean
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userEmail], references: [email])
+  userEmail String   @unique
+  token     String
+  used      Boolean
+  createdAt DateTime @default(now())
 }
 
 model School {

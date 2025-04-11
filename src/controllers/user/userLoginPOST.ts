@@ -32,6 +32,16 @@ const userLoginPost = asyncHandler(async function userLogin(
             process.env.ACCESS_TOKEN_EXPIRY,
             process.env.REFRESH_TOKEN_EXPIRY
         );
+
+        // Add refresh token to database for reuse detection
+        await prisma.refreshToken.create({
+            data: {
+                token: tokens.refreshToken,
+                used: false,
+                userEmail: email,
+            },
+        });
+
         res.cookie("accessToken", tokens.accessToken);
         res.cookie("refreshToken", tokens.refreshToken);
         res.status(200).json({ message: "User successfully logged in" });

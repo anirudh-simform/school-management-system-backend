@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { Prisma } from "../../generated/prisma/index.js";
 
 interface ApiError extends Error {
@@ -14,6 +15,12 @@ type LoginRequest = {
 declare module "jsonwebtoken" {
     export interface JwtPayload {
         email?: string;
+    }
+}
+
+declare module "express-serve-static-core" {
+    interface Request {
+        user?: JwtPayload | string;
     }
 }
 
