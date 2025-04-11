@@ -54,10 +54,10 @@ const processRefreshToken = asyncHandler(async function processToken(
         throw new InvalidTokenError("Invalid token, please reauthenticate");
     }
 
-    if (typeof decoded != "string" && decoded.userId) {
+    if (typeof decoded != "string" && decoded.email) {
         const storedToken = await prisma.refreshToken.findFirst({
             where: {
-                AND: [{ userId: decoded.userId }, { token: oldRefreshToken }],
+                AND: [{ userId: decoded.email }, { token: oldRefreshToken }],
             },
         });
 
@@ -80,7 +80,7 @@ const processRefreshToken = asyncHandler(async function processToken(
         }
 
         const newTokens = generateTokenPair(
-            { email: decoded.userId },
+            { email: decoded.email },
             "1d",
             "7d"
         );

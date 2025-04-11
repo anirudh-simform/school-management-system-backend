@@ -13,7 +13,7 @@ type LoginRequest = {
 
 declare module "jsonwebtoken" {
     export interface JwtPayload {
-        userId?: string;
+        email?: string;
     }
 }
 
