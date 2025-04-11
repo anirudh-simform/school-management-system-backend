@@ -54,6 +54,15 @@ class NotFoundError extends Error implements ApiError {
     }
 }
 
+class UnauthorizedAccessError extends Error implements ApiError {
+    public statusCode: number;
+    constructor(message: string) {
+        super(message);
+        this.statusCode = 401;
+        this.name = `UnauthorizedAccessError`;
+    }
+}
+
 export {
     AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
@@ -61,4 +70,5 @@ export {
     ReusedTokenError,
     InvalidTokenError,
     NotFoundError,
+    UnauthorizedAccessError,
 };
