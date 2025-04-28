@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { EnvironmentVariableNotFoundError } from "../../errors/errors.js";
 import { StringValue } from "ms";
+import { type tokenObject } from "../../models/types.js";
 /**
  * Generates a pair of JWT tokens with the value accessTokenExpiry parameter as the expiry for the access token.
  *
@@ -10,7 +11,7 @@ import { StringValue } from "ms";
  * @return {*}  {{accessToken: string,refreshToken: string}}
  */
 function generateTokenPair(
-    tokenData: { email: string },
+    tokenData: tokenObject,
     accessTokenExpiry: StringValue,
     refreshTokenExpiry: StringValue
 ): { accessToken: string; refreshToken: string } {

@@ -21,7 +21,7 @@ const addSchoolPOST = asyncHandler(async function addSchool(
         throw new ValidationError(results.array().join(","));
     }
 
-    const decodedToken = await authenticateSuperAdmin(req, res);
+    await authenticateSuperAdmin(req, res);
 
     const school = await prisma.school.create({
         data: {

@@ -26,7 +26,11 @@ const loginSuperAdmin = asyncHandler(async function login(
     }
 
     if (await argon2.verify(user.password, password)) {
-        const tokens = generateTokenPair({ email: email }, "6h", "7d");
+        const tokens = generateTokenPair(
+            { id: user.id, role: "SuperAdmin" },
+            "6h",
+            "7d"
+        );
 
         res.status(200).json({ accessToken: tokens.accessToken });
         return;

@@ -17,11 +17,12 @@ datasource db {
 // Authentication
 
 model RefreshToken {
-  id     Int     @id @default(autoincrement())
-  user   User    @relation(fields: [userId], references: [email])
-  userId String
-  token  String
-  used   Boolean
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  token     String
+  used      Boolean
+  createdAt DateTime @default(now())
 }
 
 model School {
@@ -29,10 +30,28 @@ model School {
   name    String
   address String
   users   User[]
+
+  Course Course[]
+
+  Program Program[]
+
+  CourseSchedule CourseSchedule[]
+
+  Attendance Attendance[]
+
+  Group Group[]
+
+  Department Department[]
+
+  Assignment Assignment[]
+
+  AssignmentGrade AssignmentGrade[]
+
+  StudentBatch StudentBatch[]
 }
 
 model SuperAdmin {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   firstname String
   lastname  String
   email     String   @unique
@@ -42,7 +61,7 @@ model SuperAdmin {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   firstname String
   lastname  String
   email     String   @unique
@@ -54,31 +73,53 @@ model User {
   schoolId  Int
   password  String
 
-  department       Department?       @relation(fields: [departmentId], references: [id])
-  departmentId     Int?
-  studentBatch     StudentBatch?     @relation(fields: [studentBatchId], references: [id])
-  studentBatchId   Int?
-  courseSchedule   CourseSchedule[]  @relation("Instructor")
-  groups           Group[]
+  // for Students
+  studentProfile StudentProfile?
+
+  // for Instructors
+  instructorProfile InstructorProfile?
+
+  groups        Group[]
+  refreshTokens RefreshToken[]
+}
+
+model StudentProfile {
+  id               Int               @id @default(autoincrement())
+  studentId        String            @unique
+  student          User              @relation(fields: [studentId], references: [id])
+  studentBatch     StudentBatch      @relation(fields: [studentBatchId], references: [id])
+  studentBatchId   Int
   attendance       Attendance[]
   assignmentGrades AssignmentGrade[]
-  refreshTokens    RefreshToken[]
+}
+
+model InstructorProfile {
+  id             Int              @id @default(autoincrement())
+  instructorId   String           @unique
+  instructor     User             @relation(fields: [instructorId], references: [id])
+  department     Department       @relation(fields: [departmentId], references: [id])
+  departmentId   Int
+  courseSchedule CourseSchedule[] @relation("Instructor")
 }
 
 model StudentBatch {
-  id        Int      @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   name      String
-  startDate DateTime @db.Date
-  endDate   DateTime @db.Date
-  program   Program  @relation(fields: [programId], references: [id])
+  startDate DateTime         @db.Date
+  endDate   DateTime         @db.Date
+  program   Program          @relation(fields: [programId], references: [id])
   programId Int
-  students  User[]
+  school    School           @relation(fields: [schoolId], references: [id])
+  schoolId  Int
+  students  StudentProfile[]
 }
 
 model Course {
   id              Int              @id @default(autoincrement())
   name            String
   description     String
+  school          School           @relation(fields: [schoolId], references: [id])
+  schoolId        Int
   programs        Program[]
   courseSchedules CourseSchedule[]
   assignments     Assignment[]
@@ -88,20 +129,24 @@ model Program {
   id           Int            @id @default(autoincrement())
   name         String
   description  String
+  school       School         @relation(fields: [schoolId], references: [id])
+  schoolId     Int
   courses      Course[]
   studentBatch StudentBatch[]
 }
 
 model CourseSchedule {
-  id           Int          @id @default(autoincrement())
-  course       Course       @relation(fields: [courseId], references: [id])
-  courseId     Int
-  instructor   User         @relation("Instructor", fields: [instructorId], references: [id])
-  instructorId Int
-  day          Day
-  group        Group        @relation(fields: [groupId], references: [id])
-  groupId      Int
-  attendance   Attendance[]
+  id                  Int               @id @default(autoincrement())
+  course              Course            @relation(fields: [courseId], references: [id])
+  courseId            Int
+  instructorProfile   InstructorProfile @relation("Instructor", fields: [instructorProfileId], references: [id])
+  instructorProfileId Int
+  school              School            @relation(fields: [schoolId], references: [id])
+  schoolId            Int
+  day                 Day
+  group               Group             @relation(fields: [groupId], references: [id])
+  groupId             Int
+  attendance          Attendance[]
 }
 
 model Attendance {
@@ -109,8 +154,10 @@ model Attendance {
   date             DateTime         @db.Date
   courseSchedule   CourseSchedule   @relation(fields: [courseScheduleId], references: [id])
   courseScheduleId Int
-  student          User             @relation(fields: [studentId], references: [id])
-  studentId        Int
+  studentProfile   StudentProfile   @relation(fields: [studentProfileId], references: [id])
+  studentProfileId Int
+  school           School           @relation(fields: [schoolId], references: [id])
+  schoolId         Int
   status           AttendanceStatus
 }
 
@@ -118,15 +165,19 @@ model Group {
   id             Int              @id @default(autoincrement())
   name           String
   user           User             @relation(fields: [userId], references: [id])
-  userId         Int
+  userId         String
+  school         School           @relation(fields: [schoolId], references: [id])
+  schoolId       Int
   courseSchedule CourseSchedule[]
   assignments    Assignment[]
 }
 
 model Department {
-  id          Int    @id @default(autoincrement())
+  id          Int                 @id @default(autoincrement())
   name        String
-  instructors User[]
+  school      School              @relation(fields: [schoolId], references: [id])
+  schoolId    Int
+  instructors InstructorProfile[]
 }
 
 model Assignment {
@@ -137,14 +188,18 @@ model Assignment {
   assignedToGroup  Group             @relation(fields: [groupId], references: [id])
   groupId          Int
   assignmentGrades AssignmentGrade[]
+  school           School            @relation(fields: [schoolId], references: [id])
+  schoolId         Int
 }
 
 model AssignmentGrade {
-  id           Int        @id @default(autoincrement())
-  assignment   Assignment @relation(fields: [assignmentId], references: [id])
-  assignmentId Int
-  student      User       @relation(fields: [studentId], references: [id])
-  studentId    Int
+  id               Int            @id @default(autoincrement())
+  assignment       Assignment     @relation(fields: [assignmentId], references: [id])
+  assignmentId     Int
+  studentProflie   StudentProfile @relation(fields: [studentProfileId], references: [id])
+  studentProfileId Int
+  school           School         @relation(fields: [schoolId], references: [id])
+  schoolId         Int
 }
 
 enum Role {

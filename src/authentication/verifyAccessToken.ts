@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload, VerifyErrors } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import {
     AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
@@ -8,12 +8,15 @@ import {
 import { verifyJwtPromisified } from "./utilityMethods/verifyJwtPromisified.js";
 import "dotenv/config";
 import { processRefreshToken } from "./processRefreshTokens.js";
+import asyncHandler from "express-async-handler";
 
 declare module "express-serve-static-core" {
     interface Request {
         user?: JwtPayload | string;
     }
 }
+
+// TODO: Remove all the console.log's
 
 /**
  * @description
@@ -27,7 +30,8 @@ declare module "express-serve-static-core" {
  * @param {NextFunction} next
  * @returns {*}
  */
-async function verifyAccessToken(
+
+const verifyAccessToken = asyncHandler(async function verifyAccessToken(
     req: Request,
     res: Response,
     next: NextFunction
@@ -49,24 +53,25 @@ async function verifyAccessToken(
         );
     }
 
-    const user = await verifyJwtPromisified(token, secretKey).catch(
-        async (err: VerifyErrors) => {
-            if (err.name == "TokenExpiredError") {
-                await processRefreshToken(req, res, next);
-                return;
-            } else {
-                throw new InvalidTokenError(
-                    "Invalid token, please reauthenticate"
-                );
-            }
-        }
-    );
+    try {
+        const user = await verifyJwtPromisified(token, secretKey);
 
-    if (req.user && user) {
-        req.user = user;
-        next();
-        return;
+        if (user) {
+            req.user = user;
+
+            next();
+            return;
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    } catch (error) {
+        if (error == "TokenExpiredError") {
+            await processRefreshToken(req, res, next);
+            return;
+        } else {
+            throw new InvalidTokenError("Invalid token, please reauthenticate");
+        }
     }
-}
+});
 
 export { verifyAccessToken };
