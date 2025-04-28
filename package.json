@@ -26,9 +26,13 @@
     },
     "dependencies": {
         "@prisma/client": "^6.5.0",
+        "@types/cookie-parser": "^1.4.8",
+        "@types/cors": "^2.8.17",
         "@types/jsonwebtoken": "^9.0.9",
         "@types/ms": "^2.1.0",
         "argon2": "^0.41.1",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
         "dotenv": "^16.4.7",
         "express-async-handler": "^1.2.0",
         "express-validator": "^7.2.1",

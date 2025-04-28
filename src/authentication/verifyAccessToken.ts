@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { JwtPayload, VerifyErrors } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import {
     AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
@@ -8,12 +8,15 @@ import {
 import { verifyJwtPromisified } from "./utilityMethods/verifyJwtPromisified.js";
 import "dotenv/config";
 import { processRefreshToken } from "./processRefreshTokens.js";
+import asyncHandler from "express-async-handler";
 
 declare module "express-serve-static-core" {
     interface Request {
         user?: JwtPayload | string;
     }
 }
+
+// TODO: Remove all the console.log's
 
 /**
  * @description
@@ -27,12 +30,15 @@ declare module "express-serve-static-core" {
  * @param {NextFunction} next
  * @returns {*}
  */
-async function verifyAccessToken(
+
+const verifyAccessToken = asyncHandler(async function verifyAccessToken(
     req: Request,
     res: Response,
     next: NextFunction
 ) {
+    console.log("inside accessToken verification");
     const token = req.cookies.accessToken;
+    console.log(token);
 
     if (!token) {
         throw new AuthTokenNotFoundError(
@@ -41,6 +47,7 @@ async function verifyAccessToken(
     }
 
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
+    console.log(secretKey);
 
     if (!secretKey) {
         throw new EnvironmentVariableNotFoundError(
@@ -49,24 +56,29 @@ async function verifyAccessToken(
         );
     }
 
-    const user = await verifyJwtPromisified(token, secretKey).catch(
-        async (err: VerifyErrors) => {
-            if (err.name == "TokenExpiredError") {
-                await processRefreshToken(req, res, next);
-                return;
-            } else {
-                throw new InvalidTokenError(
-                    "Invalid token, please reauthenticate"
-                );
-            }
-        }
-    );
+    try {
+        const user = await verifyJwtPromisified(token, secretKey);
 
-    if (req.user && user) {
-        req.user = user;
-        next();
-        return;
+        console.log("user", user);
+
+        if (user) {
+            console.log("inside this");
+            req.user = user;
+            console.log(req.user);
+            next();
+            return;
+        } else {
+            throw new Error("An unexpected error occurred");
+        }
+    } catch (error) {
+        if (error == "TokenExpiredError") {
+            console.log("inside catch if", error);
+            await processRefreshToken(req, res, next);
+            return;
+        } else {
+            throw new InvalidTokenError("Invalid token, please reauthenticate");
+        }
     }
-}
+});
 
 export { verifyAccessToken };

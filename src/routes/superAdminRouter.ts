@@ -8,7 +8,7 @@ import { addSchoolSuperAdminPOST } from "../controllers/superAdmin/addSchoolSupe
 
 const superAdminRouter = Router();
 
-superAdminRouter.post("/sadmin", superAdminValidation, registerSuperAdmin);
+superAdminRouter.post("/", superAdminValidation, registerSuperAdmin);
 superAdminRouter.post("/login", loginSuperAdmin);
 superAdminRouter.post("/school", validateCreateSchool, addSchoolPOST);
 superAdminRouter.post("/ssadmin", addSchoolSuperAdminPOST);

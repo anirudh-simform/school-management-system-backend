@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
     AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
+    UnauthorizedAccessError,
 } from "../../../errors/errors.js";
 import { verifyJwtPromisified } from "../../../authentication/utilityMethods/verifyJwtPromisified.js";
 import "dotenv/config";
@@ -30,6 +31,14 @@ async function authenticateSuperAdmin(req: Request, res: Response) {
             throw new Error("Invalid Access token");
         }
     );
+
+    if (decodedToken && typeof decodedToken != "string" && decodedToken.role) {
+        if (decodedToken.role != "SuperAdmin") {
+            throw new UnauthorizedAccessError(
+                "Only users with SuperAdmin pirvileges can add schools"
+            );
+        }
+    }
 
     return decodedToken;
 }
