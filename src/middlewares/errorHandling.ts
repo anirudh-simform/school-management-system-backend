@@ -20,7 +20,6 @@ function handleError(
         statusCode = err.statusCode;
     }
 
-    console.log("message", err.message);
     logger.error(err);
     res.status(statusCode).json({ message: err.message });
 }

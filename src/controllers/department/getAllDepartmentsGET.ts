@@ -29,7 +29,6 @@ const getAllDepartmentsGET = asyncHandler(async function getAllDepartments(
         });
 
         res.status(200).json(departments);
-        console.log(departments);
     }
 });
 

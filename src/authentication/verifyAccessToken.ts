@@ -36,9 +36,7 @@ const verifyAccessToken = asyncHandler(async function verifyAccessToken(
     res: Response,
     next: NextFunction
 ) {
-    console.log("inside accessToken verification");
     const token = req.cookies.accessToken;
-    console.log(token);
 
     if (!token) {
         throw new AuthTokenNotFoundError(
@@ -47,7 +45,6 @@ const verifyAccessToken = asyncHandler(async function verifyAccessToken(
     }
 
     const secretKey = process.env.ACCESS_TOKEN_SECRET;
-    console.log(secretKey);
 
     if (!secretKey) {
         throw new EnvironmentVariableNotFoundError(
@@ -59,12 +56,9 @@ const verifyAccessToken = asyncHandler(async function verifyAccessToken(
     try {
         const user = await verifyJwtPromisified(token, secretKey);
 
-        console.log("user", user);
-
         if (user) {
-            console.log("inside this");
             req.user = user;
-            console.log(req.user);
+
             next();
             return;
         } else {
@@ -72,7 +66,6 @@ const verifyAccessToken = asyncHandler(async function verifyAccessToken(
         }
     } catch (error) {
         if (error == "TokenExpiredError") {
-            console.log("inside catch if", error);
             await processRefreshToken(req, res, next);
             return;
         } else {

@@ -27,7 +27,6 @@ const processRefreshToken = asyncHandler(async function processToken(
     res: Response,
     next: NextFunction
 ) {
-    console.log("inside processRefresh");
     const oldRefreshToken: string = req.cookies.refreshToken;
 
     if (!oldRefreshToken) {
@@ -106,18 +105,20 @@ const processRefreshToken = asyncHandler(async function processToken(
                 },
             });
 
-            res.cookie("accessToken", newTokens.accessToken);
-            res.cookie("refreshToken", newTokens.refreshToken);
+            res.cookie("accessToken", newTokens.accessToken, {
+                httpOnly: true,
+            });
+            res.cookie("refreshToken", newTokens.refreshToken, {
+                httpOnly: true,
+            });
 
             // Add the user object to request object for the next middleware
             req.user = decoded;
-            console.log("refreshed");
             next();
             return;
         }
     } catch (error) {
         if (error == "TokenExpiredError") {
-            console.log("inside catch if process", error);
             throw new Error("Token Expired, please reauthenticate");
         } else {
             throw new InvalidTokenError("Invalid token, please reauthenticate");
