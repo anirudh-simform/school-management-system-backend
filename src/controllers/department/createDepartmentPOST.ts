@@ -1,7 +1,11 @@
 import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { UnauthorizedAccessError } from "../../errors/errors.js";
+import {
+    UnauthorizedAccessError,
+    ValidationError,
+} from "../../errors/errors.js";
+import { validationResult } from "express-validator";
 
 const prisma = new PrismaClient();
 
@@ -9,6 +13,14 @@ const createDepartmentPOST = asyncHandler(async function createDepartment(
     req: Request<{}, {}, Prisma.DepartmentCreateInput>,
     res: Response
 ) {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        throw new ValidationError("Error in validating form fields", {
+            errors: errors.array(),
+        });
+    }
+
     if (!req.user) {
         throw new UnauthorizedAccessError(
             "Only School Super Admins and Admins are allowed to create and edit departments"

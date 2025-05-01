@@ -1,8 +1,9 @@
 import { JwtPayload } from "jsonwebtoken";
 import { Prisma } from "../../generated/prisma/index.js";
 
-interface ApiError extends Error {
+interface IApiError extends Error {
     statusCode: number;
+    body?: Record<string, object>;
 }
 
 type SuperAdmin = Prisma.SuperAdminCreateInput;
@@ -23,10 +24,12 @@ type UpdateProgramRequestParams = {
 };
 
 type UpdateDepartmentRequestParams = UpdateProgramRequestParams;
+
+type UpdateItemRequestParams = UpdateDepartmentRequestParams;
 type ProgramUpdateInput = {
     name: string;
     description: string;
-    courses?: { id: number }[];
+    courses: { id: number }[];
 };
 
 type ProgramRequest = ProgramUpdateInput;
@@ -75,7 +78,7 @@ declare module "express-serve-static-core" {
 }
 
 export {
-    type ApiError,
+    type IApiError,
     type SuperAdmin,
     type LoginRequest,
     type tokenObject,
@@ -84,4 +87,5 @@ export {
     type ProgramRequest,
     type AddUserRequest,
     type UpdateDepartmentRequestParams,
+    type UpdateItemRequestParams,
 };

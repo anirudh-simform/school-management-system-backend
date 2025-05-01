@@ -10,7 +10,7 @@ const departmentRouter = Router();
 
 departmentRouter.post(
     "/",
-
+    validateCreateDepartment,
     verifyAccessToken,
     createDepartmentPOST
 );

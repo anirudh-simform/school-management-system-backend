@@ -23,8 +23,15 @@ const createProgramPOST = asyncHandler(async function createProgram(
             );
         }
 
-        if (req.body.courses) {
-            await prisma.program.create({
+        let createdProgram: {
+            id: number;
+            name: string;
+            description: string;
+            schoolId: number;
+        };
+
+        if (req.body.courses.length > 0) {
+            createdProgram = await prisma.program.create({
                 data: {
                     name: req.body.name,
                     description: req.body.description,
@@ -34,20 +41,50 @@ const createProgramPOST = asyncHandler(async function createProgram(
                             return { id: id };
                         }),
                     },
+                    school: {
+                        connect: {
+                            id: req.user.schoolId,
+                        },
+                    },
                 },
             });
         } else {
-            await prisma.program.create({
+            createdProgram = await prisma.program.create({
                 data: {
                     name: req.body.name,
                     description: req.body.description,
+                    school: {
+                        connect: {
+                            id: req.user.schoolId,
+                        },
+                    },
                 },
             });
         }
-
         res.status(201).json({
-            message: "Program created",
-            program: req.body,
+            message: "success",
+            createdProgram: {
+                id: createdProgram.id,
+                name: createdProgram.name,
+                description: createdProgram.description,
+            },
+            programs: (
+                await prisma.program.findMany({
+                    where: {
+                        schoolId: req.user.schoolId,
+                    },
+                    include: {
+                        courses: true,
+                    },
+                })
+            ).map((program) => {
+                return {
+                    id: program.id,
+                    name: program.name,
+                    description: program.description,
+                    courses: program.courses,
+                };
+            }),
         });
     }
 });
