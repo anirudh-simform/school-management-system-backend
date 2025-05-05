@@ -32,7 +32,7 @@ const deleteProgramDELETE = asyncHandler(async function deleteProgram(
             },
         });
 
-        res.status(201).json({
+        res.status(200).json({
             message: "success",
             programs: (
                 await prisma.program.findMany({

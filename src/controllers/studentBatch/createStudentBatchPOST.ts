@@ -1,15 +1,28 @@
 import { PrismaClient } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { UnauthorizedAccessError } from "../../errors/errors.js";
+import { validationResult } from "express-validator";
+import {
+    UnauthorizedAccessError,
+    ValidationError,
+} from "../../errors/errors.js";
 import { type StudentBatch } from "../../../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
 const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
-    req: Request<{}, {}, Omit<StudentBatch, "id">>,
+    req: Request<{}, {}, Omit<StudentBatch, "id" | "schoolId">>,
     res: Response
 ) {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        throw new ValidationError("Error in validating form fields", {
+            errors: errors.array(),
+        });
+    }
+
+    console.log("inside create student batch");
     if (!req.user) {
         throw new UnauthorizedAccessError(
             "Only School Super Admins and Admins are allowed to create and edit student batches"
@@ -33,12 +46,34 @@ const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
                         id: Number(req.body.programId),
                     },
                 },
+                school: {
+                    connect: {
+                        id: req.user.schoolId,
+                    },
+                },
             },
         });
 
         res.status(201).json({
-            message: "Student Batch created",
+            message: "success",
             studentBatch: studentBatch,
+            studentBatches: await prisma.studentBatch.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    startDate: true,
+                    endDate: true,
+                    program: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            }),
         });
     }
 });

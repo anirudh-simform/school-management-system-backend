@@ -91,7 +91,11 @@ const processRefreshToken = asyncHandler(async function processToken(
             });
 
             const newTokens = generateTokenPair(
-                { id: decoded.id, role: decoded.role },
+                {
+                    id: decoded.id,
+                    role: decoded.role,
+                    schoolId: decoded.schoolId,
+                },
                 process.env.ACCESS_TOKEN_EXPIRY,
                 process.env.REFRESH_TOKEN_EXPIRY
             );
