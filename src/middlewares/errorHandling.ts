@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { type ApiError } from "../models/types.js";
+import { ApiError, ValidationError } from "../errors/errors.js";
 import { logger } from "../logging/logger.js";
-import { VerifyErrors } from "jsonwebtoken";
 
 /**
  * @param {(Error | ApiError)} err
@@ -10,18 +9,23 @@ import { VerifyErrors } from "jsonwebtoken";
  * @param {NextFunction} next
  */
 function handleError(
-    err: Error | ApiError | VerifyErrors,
+    err: ApiError,
     req: Request,
     res: Response,
     next: NextFunction
 ) {
     let statusCode = 500;
+
     if ("statusCode" in err) {
         statusCode = err.statusCode;
     }
 
     logger.error(err);
-    res.status(statusCode).json({ message: err.message });
+    if (err.body && err instanceof ValidationError) {
+        res.status(statusCode).json({ message: err.message, body: err.body });
+    } else {
+        res.status(statusCode).json({ message: err.message });
+    }
 }
 
 export { handleError };

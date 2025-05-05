@@ -10,10 +10,11 @@ import { ProgramUpdateInput } from "../../models/types.js";
 
 const prisma = new PrismaClient();
 
-const updateProgramPOST = asyncHandler(async function updateProgram(
+const updateProgramPUT = asyncHandler(async function updateProgram(
     req: Request<UpdateProgramRequestParams, {}, ProgramUpdateInput>,
     res: Response
 ) {
+    // TODO: Update according to latest information
     if (!req.params.id) {
         throw new BadRequestError(
             "The request does not contain any request parameters"
@@ -25,6 +26,13 @@ const updateProgramPOST = asyncHandler(async function updateProgram(
         );
     }
 
+    let updatedProgram: {
+        id: number;
+        name: string;
+        description: string;
+        schoolId: number;
+    };
+
     if (typeof req.user != "string") {
         if (req.user.role != "SchoolSuperAdmin" && req.user.role != "Admin") {
             throw new UnauthorizedAccessError(
@@ -32,8 +40,8 @@ const updateProgramPOST = asyncHandler(async function updateProgram(
             );
         }
 
-        if (req.body.courses && req.body.courses.length > 0) {
-            await prisma.program.update({
+        if (req.body.courses.length > 0) {
+            updatedProgram = await prisma.program.update({
                 where: {
                     id: Number(req.params.id),
                 },
@@ -41,7 +49,7 @@ const updateProgramPOST = asyncHandler(async function updateProgram(
                     name: req.body.name,
                     description: req.body.description,
                     courses: {
-                        connect: req.body.courses.map((course) => {
+                        set: req.body.courses.map((course) => {
                             const id = Number(course.id);
                             return { id: id };
                         }),
@@ -49,22 +57,42 @@ const updateProgramPOST = asyncHandler(async function updateProgram(
                 },
             });
         } else {
-            await prisma.program.update({
+            updatedProgram = await prisma.program.update({
                 where: {
                     id: Number(req.params.id),
                 },
                 data: {
                     name: req.body.name,
                     description: req.body.description,
+                    courses: {
+                        set: [],
+                    },
                 },
             });
         }
 
         res.status(200).json({
-            message: "Program updated",
-            program: req.body,
+            message: "success",
+            updateProgram: updatedProgram,
+            programs: (
+                await prisma.program.findMany({
+                    where: {
+                        schoolId: req.user.schoolId,
+                    },
+                    include: {
+                        courses: true,
+                    },
+                })
+            ).map((program) => {
+                return {
+                    id: program.id,
+                    name: program.name,
+                    description: program.description,
+                    courses: program.courses,
+                };
+            }),
         });
     }
 });
 
-export { updateProgramPOST };
+export { updateProgramPUT };

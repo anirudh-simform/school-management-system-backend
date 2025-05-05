@@ -1,6 +1,12 @@
-import { ApiError } from "../models/types.js";
+import { IApiError } from "../models/types.js";
 
-class AuthTokenNotFoundError extends Error implements ApiError {
+abstract class ApiError extends Error implements IApiError {
+    public statusCode: number = 500;
+    public body?: Record<string, object>;
+    public name: string = "InternalServerError";
+}
+
+class AuthTokenNotFoundError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -9,7 +15,7 @@ class AuthTokenNotFoundError extends Error implements ApiError {
     }
 }
 
-class ReusedTokenError extends Error implements ApiError {
+class ReusedTokenError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -18,7 +24,7 @@ class ReusedTokenError extends Error implements ApiError {
     }
 }
 
-class InvalidTokenError extends Error implements ApiError {
+class InvalidTokenError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -27,7 +33,7 @@ class InvalidTokenError extends Error implements ApiError {
     }
 }
 
-class EnvironmentVariableNotFoundError extends Error implements ApiError {
+class EnvironmentVariableNotFoundError extends ApiError {
     public statusCode: number;
     constructor(message: string, variableName: string) {
         super(message);
@@ -36,16 +42,17 @@ class EnvironmentVariableNotFoundError extends Error implements ApiError {
     }
 }
 
-class ValidationError extends Error implements ApiError {
+class ValidationError extends ApiError {
     public statusCode: number;
-    constructor(message: string) {
+    constructor(message: string, body?: Record<string, object>) {
         super(message);
+        this.body = body;
         this.statusCode = 400;
         this.name = `ValidationError`;
     }
 }
 
-class NotFoundError extends Error implements ApiError {
+class NotFoundError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -54,7 +61,7 @@ class NotFoundError extends Error implements ApiError {
     }
 }
 
-class UnauthorizedAccessError extends Error implements ApiError {
+class UnauthorizedAccessError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -63,7 +70,7 @@ class UnauthorizedAccessError extends Error implements ApiError {
     }
 }
 
-class BadRequestError extends Error implements ApiError {
+class BadRequestError extends ApiError {
     public statusCode: number;
     constructor(message: string) {
         super(message);
@@ -81,4 +88,5 @@ export {
     NotFoundError,
     UnauthorizedAccessError,
     BadRequestError,
+    ApiError,
 };

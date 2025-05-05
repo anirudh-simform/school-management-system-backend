@@ -5,17 +5,13 @@ import {
     UnauthorizedAccessError,
     ValidationError,
 } from "../../errors/errors.js";
-import { UpdateDepartmentRequestParams } from "../../models/types.js";
+import { UpdateItemRequestParams } from "../../models/types.js";
 import { validationResult } from "express-validator";
 
 const prisma = new PrismaClient();
 
-const EditDepartmentPOST = asyncHandler(async function editDepartment(
-    req: Request<
-        UpdateDepartmentRequestParams,
-        unknown,
-        Prisma.DepartmentCreateInput
-    >,
+const editCoursePOST = asyncHandler(async function editCourse(
+    req: Request<UpdateItemRequestParams, unknown, Prisma.CourseCreateInput>,
     res: Response
 ) {
     const errors = validationResult(req);
@@ -28,7 +24,7 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
 
     if (!req.user) {
         throw new UnauthorizedAccessError(
-            "Only School Super Admins and Admins are allowed to create and edit departments"
+            "Only School Super Admins and Admins are allowed to create and edit courses"
         );
     }
 
@@ -39,13 +35,14 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
     if (typeof req.user != "string") {
         if (req.user.role != "SchoolSuperAdmin" && req.user.role != "Admin") {
             throw new UnauthorizedAccessError(
-                "Only School Super Admins and Admins are allowed to create and edit departments"
+                "Only School Super Admins and Admins are allowed to create and edit courses"
             );
         }
 
-        const createdDepartment = await prisma.department.update({
+        const updatedCourse = await prisma.course.update({
             data: {
                 name: req.body.name,
+                description: req.body.description,
             },
             where: {
                 id: Number(req.params.id),
@@ -54,14 +51,22 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
 
         res.status(201).json({
             message: "success",
-            departments: await prisma.department.findMany({
-                where: {
-                    schoolId: Number(req.user.schoolId),
-                },
+            courses: (
+                await prisma.course.findMany({
+                    where: {
+                        schoolId: req.user.schoolId,
+                    },
+                })
+            ).map((course) => {
+                return {
+                    id: course.id,
+                    name: course.name,
+                    description: course.description,
+                };
             }),
-            createdDepartment: createdDepartment,
+            updatedCourse: updatedCourse,
         });
     }
 });
 
-export { EditDepartmentPOST };
+export { editCoursePOST };
