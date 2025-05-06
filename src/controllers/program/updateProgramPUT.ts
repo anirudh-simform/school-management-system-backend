@@ -14,7 +14,6 @@ const updateProgramPUT = asyncHandler(async function updateProgram(
     req: Request<UpdateProgramRequestParams, {}, ProgramUpdateInput>,
     res: Response
 ) {
-    // TODO: Update according to latest information
     if (!req.params.id) {
         throw new BadRequestError(
             "The request does not contain any request parameters"

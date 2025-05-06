@@ -49,7 +49,7 @@ const editCoursePOST = asyncHandler(async function editCourse(
             },
         });
 
-        res.status(201).json({
+        res.status(200).json({
             message: "success",
             courses: (
                 await prisma.course.findMany({
