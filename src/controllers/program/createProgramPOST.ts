@@ -10,7 +10,6 @@ const createProgramPOST = asyncHandler(async function createProgram(
     req: Request<{}, {}, ProgramRequest>,
     res: Response
 ) {
-    console.log(req.user);
     if (!req.user) {
         throw new UnauthorizedAccessError(
             "Only School Super Admins and Admins are allowed to create and edit program"

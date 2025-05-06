@@ -14,7 +14,12 @@ studentBatchRouter.post(
     createStudentBatchPOST
 );
 studentBatchRouter.get("/", verifyAccessToken, getAllStudentBatchesGET);
-studentBatchRouter.put("/:id", verifyAccessToken, updateStudentBatchPUT);
+studentBatchRouter.put(
+    "/:id",
+    verifyAccessToken,
+    validateStudentBatch,
+    updateStudentBatchPUT
+);
 studentBatchRouter.delete("/:id", verifyAccessToken, deleteStudentBatchDELETE);
 
 export { studentBatchRouter };

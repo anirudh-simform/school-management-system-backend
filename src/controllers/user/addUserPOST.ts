@@ -106,7 +106,7 @@ const addUserPost = asyncHandler(async function addUser(
             break;
     }
 
-    res.status(200).json({
+    res.status(201).json({
         message: "User creation successfull",
         user: {
             name: `${commonData.firstname} ${commonData.lastname}`,

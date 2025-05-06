@@ -52,7 +52,7 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
             },
         });
 
-        res.status(201).json({
+        res.status(200).json({
             message: "success",
             departments: await prisma.department.findMany({
                 where: {
