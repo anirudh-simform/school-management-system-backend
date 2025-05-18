@@ -9,6 +9,8 @@ import { departmentRouter } from "./routes/departmentRouter.js";
 import { courseRouter } from "./routes/courseRouter.js";
 import { programRouter } from "./routes/programRouter.js";
 import { studentBatchRouter } from "./routes/studentBatchRouter.js";
+import { gradeLevelRouter } from "./routes/gradeLevelRouter.js";
+
 import "dotenv/config";
 
 const app = express();
@@ -23,6 +25,7 @@ app.use("/department", departmentRouter);
 app.use("/course", courseRouter);
 app.use("/program", programRouter);
 app.use("/studentBatch", studentBatchRouter);
+app.use("/gradeLevel", gradeLevelRouter);
 
 // Error handler
 app.use(handleError);

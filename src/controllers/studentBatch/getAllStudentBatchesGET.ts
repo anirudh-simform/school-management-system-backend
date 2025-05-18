@@ -42,6 +42,7 @@ const getAllStudentBatchesGET = asyncHandler(
                         name: studentBatch.name,
                         startDate: studentBatch.startDate,
                         endDate: studentBatch.endDate,
+                        gradeLevel: studentBatch.gradeLevelId,
                         program: {
                             id: studentBatch.program.id,
                             name: studentBatch.program.name,
