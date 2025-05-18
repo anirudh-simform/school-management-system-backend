@@ -5,7 +5,6 @@ import {
     UnauthorizedAccessError,
     BadRequestError,
 } from "../../errors/errors.js";
-import { UpdateProgramRequestParams } from "../../models/types.js";
 import { type UpdateItemRequestParams } from "../../models/types.js";
 import { type StudentBatch } from "../../../generated/prisma/index.js";
 
@@ -47,6 +46,11 @@ const updateStudentBatchPUT = asyncHandler(async function updateStudentBatch(
                 name: req.body.name,
                 startDate: new Date(req.body.startDate),
                 endDate: new Date(req.body.endDate),
+                gradeLevel: {
+                    connect: {
+                        id: Number(req.body.gradeLevelId),
+                    },
+                },
                 program: {
                     connect: {
                         id: Number(req.body.programId),
