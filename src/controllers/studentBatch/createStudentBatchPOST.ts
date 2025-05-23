@@ -41,6 +41,11 @@ const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
                 name: req.body.name,
                 startDate: new Date(req.body.startDate),
                 endDate: new Date(req.body.endDate),
+                gradeLevel: {
+                    connect: {
+                        id: Number(req.body.gradeLevelId),
+                    },
+                },
                 program: {
                     connect: {
                         id: Number(req.body.programId),
@@ -66,6 +71,12 @@ const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
                     name: true,
                     startDate: true,
                     endDate: true,
+                    gradeLevel: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
                     program: {
                         select: {
                             id: true,
