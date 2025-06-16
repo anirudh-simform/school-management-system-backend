@@ -42,3 +42,8 @@ The features that the current implementation has are:-
 - Student Batch CRUD operations
 - Instructor Department CRUD operations
 - Grade Level CRUD operations
+
+## Links
+
+- [ER Diagram](https://app.eraser.io/workspace/KJCnjMn0I22424ffcXX0?origin=share)
+- [Project Proposal](https://simformsolutionspvtltd-my.sharepoint.com/:w:/r/personal/anirudh_nair_simformsolutions_com/Documents/Anirudh-Muraleedharan-Nair-School-Management-System.docx?d=w00068d3c8a28420395c6d906bbf369fc&csf=1&web=1&e=IsphDo)
