@@ -93,9 +93,17 @@ const addUserPost = asyncHandler(async function addUser(
                                             ),
                                         },
                                     },
+                                    gradeLevel: {
+                                        connect: {
+                                            id: Number(
+                                                req.body.studentProfile
+                                                    .gradeLevelId
+                                            ),
+                                        },
+                                    },
                                 },
                             },
-                        },      
+                        },
                     });
                 } else {
                     throw new BadRequestError(

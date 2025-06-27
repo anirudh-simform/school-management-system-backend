@@ -20,6 +20,8 @@ function handleError(
         statusCode = err.statusCode;
     }
 
+    // TODO: Don't log errors for status codes other than 500
+
     logger.error(err);
     if (err.body && err instanceof ValidationError) {
         res.status(statusCode).json({ message: err.message, body: err.body });

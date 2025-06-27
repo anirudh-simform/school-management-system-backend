@@ -39,6 +39,7 @@ type AddUserRequest = Prisma.UserGetPayload<{
         studentProfile: {
             select: {
                 studentBatchId: true;
+                gradeLevelId: true;
             };
         };
         instructorProfile: {
