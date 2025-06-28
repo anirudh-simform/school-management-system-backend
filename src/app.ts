@@ -10,12 +10,14 @@ import { courseRouter } from "./routes/courseRouter.js";
 import { programRouter } from "./routes/programRouter.js";
 import { studentBatchRouter } from "./routes/studentBatchRouter.js";
 import { gradeLevelRouter } from "./routes/gradeLevelRouter.js";
+import { academicYearRouter } from "./routes/academicYearRouter.js";
+import { academicTermRouter } from "./routes/academicTermRouter.js";
 
 import "dotenv/config";
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:4200", credentials: true }));
+app.use(cors({ origin: "http://localhost:4200/", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -26,6 +28,8 @@ app.use("/course", courseRouter);
 app.use("/program", programRouter);
 app.use("/studentBatch", studentBatchRouter);
 app.use("/gradeLevel", gradeLevelRouter);
+app.use("academicYear", academicYearRouter);
+app.use("academicTerm", academicTermRouter);
 
 // Error handler
 app.use(handleError);

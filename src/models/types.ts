@@ -1,40 +1,51 @@
 import { JwtPayload } from "jsonwebtoken";
 import { Prisma } from "../../generated/prisma/index.js";
 
-interface IApiError extends Error {
+export interface IApiError extends Error {
     statusCode: number;
     body?: Record<string, object>;
 }
 
-type SuperAdmin = Prisma.SuperAdminCreateInput;
+enum GroupType {
+    CLASS,
+    LAB,
+}
 
-type LoginRequest = {
+export type SearchAcademicYearParams = {
+    year: string;
+};
+
+export type SearchAcademicTermParams = SearchAcademicYearParams;
+
+export type SuperAdmin = Prisma.SuperAdminCreateInput;
+
+export type LoginRequest = {
     email: string;
     password: string;
 };
 
-type tokenObject = {
+export type tokenObject = {
     id: string;
     role: string;
     schoolId?: number;
 };
 
-type UpdateProgramRequestParams = {
+export type UpdateProgramRequestParams = {
     id?: number;
 };
 
-type UpdateDepartmentRequestParams = UpdateProgramRequestParams;
+export type UpdateDepartmentRequestParams = UpdateProgramRequestParams;
 
-type UpdateItemRequestParams = UpdateDepartmentRequestParams;
-type ProgramUpdateInput = {
+export type UpdateItemRequestParams = UpdateDepartmentRequestParams;
+export type ProgramUpdateInput = {
     name: string;
     description: string;
     courses: { id: number }[];
 };
 
-type ProgramRequest = ProgramUpdateInput;
+export type ProgramRequest = ProgramUpdateInput;
 
-type AddUserRequest = Prisma.UserGetPayload<{
+export type AddUserRequest = Prisma.UserGetPayload<{
     select: {
         studentProfile: {
             select: {
@@ -59,6 +70,22 @@ type AddUserRequest = Prisma.UserGetPayload<{
     };
 }>;
 
+export type AddAcademicYearRequest = {
+    name: string;
+    startDate: string;
+    endDate: string;
+};
+
+export type AddAcademicTermRequest = {
+    academicYearId: number;
+} & AddAcademicYearRequest;
+
+export type AddStudentGroupRequest = {
+    name: string;
+    studentProfiles: number[];
+    groupType: GroupType;
+};
+
 declare module "jsonwebtoken" {
     export interface JwtPayload {
         id?: string;
@@ -77,16 +104,3 @@ declare module "express-serve-static-core" {
         user?: JwtPayload | string;
     }
 }
-
-export {
-    type IApiError,
-    type SuperAdmin,
-    type LoginRequest,
-    type tokenObject,
-    type UpdateProgramRequestParams,
-    type ProgramUpdateInput,
-    type ProgramRequest,
-    type AddUserRequest,
-    type UpdateDepartmentRequestParams,
-    type UpdateItemRequestParams,
-};

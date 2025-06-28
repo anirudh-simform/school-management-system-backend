@@ -48,6 +48,10 @@ model School {
   AssignmentGrade AssignmentGrade[]
 
   StudentBatch StudentBatch[]
+
+  AcademicYear AcademicYear[]
+
+  AcademicTerm AcademicTerm[]
 }
 
 model SuperAdmin {
@@ -113,11 +117,12 @@ model Department {
 }
 
 model AcademicYear {
-  id        Int      @id @default(autoincrement())
-  name      String
-  startDate DateTime @db.Date
-  endDate   DateTime @db.Date
-
+  id           Int            @id @default(autoincrement())
+  name         String
+  startDate    DateTime       @db.Date
+  endDate      DateTime       @db.Date
+  school       School         @relation(fields: [schoolId], references: [id])
+  schoolId     Int
   AcademicTerm AcademicTerm[]
 }
 
@@ -128,6 +133,8 @@ model AcademicTerm {
   endDate        DateTime     @db.Date
   academicYear   AcademicYear @relation(fields: [academicYearId], references: [id])
   academicYearId Int
+  school         School       @relation(fields: [schoolId], references: [id])
+  schoolId       Int
 
   CourseSchedule CourseSchedule[]
 }
@@ -154,21 +161,17 @@ model StudentBatch {
   students     StudentProfile[]
   gradeLevel   GradeLevel       @relation(fields: [gradeLevelId], references: [id])
   gradeLevelId Int
-  studentGroup StudentGroup[]
 }
 
 model StudentGroup {
-  id               Int              @id @default(autoincrement())
-  name             String
-  studentProfile   StudentProfile   @relation(fields: [studentProfileId], references: [id])
-  studentProfileId Int
-  school           School           @relation(fields: [schoolId], references: [id])
-  schoolId         Int
-  studentBatch     StudentBatch     @relation(fields: [studentBatchId], references: [id])
-  studentBatchId   Int
-  groupType        GroupType
-  courseSchedule   CourseSchedule[]
-  assignments      Assignment[]
+  id             Int              @id @default(autoincrement())
+  name           String
+  studentProfile StudentProfile[]
+  school         School           @relation(fields: [schoolId], references: [id])
+  schoolId       Int
+  groupType      GroupType
+  courseSchedule CourseSchedule[]
+  assignments    Assignment[]
 }
 
 model Course {
@@ -247,7 +250,7 @@ model Assignment {
   courseId         Int
   assignedToGroup  StudentGroup      @relation(fields: [groupId], references: [id])
   groupId          Int
-  isGraded         Boolean
+  maxMarks         Int               @default(0)
   assignmentGrades AssignmentGrade[]
   school           School            @relation(fields: [schoolId], references: [id])
   schoolId         Int
@@ -261,6 +264,7 @@ model AssignmentGrade {
   studentProfileId Int
   school           School         @relation(fields: [schoolId], references: [id])
   schoolId         Int
+  marksObtained    Int            @default(0)
 }
 
 enum GroupType {
