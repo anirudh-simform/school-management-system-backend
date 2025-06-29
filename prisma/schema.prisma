@@ -172,6 +172,8 @@ model StudentGroup {
   groupType      GroupType
   courseSchedule CourseSchedule[]
   assignments    Assignment[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model Course {
