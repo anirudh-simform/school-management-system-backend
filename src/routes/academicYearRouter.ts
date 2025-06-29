@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { createAcademicYearPOST } from "../controllers/academicYear/createAcademicYearPOST.js";
-import { academicYearValidation } from "../validation/validateAcademicYear.js";
+import {
+    academicYearQueryParamsValidation,
+    academicYearValidation,
+} from "../validation/validateAcademicYear.js";
 import { verifyAccessToken } from "../authentication/verifyAccessToken.js";
 import { editAcademicYearPUT } from "../controllers/academicYear/editAcademicYearPUT.js";
 import { deleteAcademicYearDELETE } from "../controllers/academicYear/deleteAcademicYearDELETE.js";
@@ -24,6 +27,11 @@ academicYearRouter.put(
 
 academicYearRouter.delete("/:id", verifyAccessToken, deleteAcademicYearDELETE);
 
-academicYearRouter.get("/", verifyAccessToken, searchAcademicYearGET);
+academicYearRouter.get(
+    "/",
+    verifyAccessToken,
+    academicYearQueryParamsValidation,
+    searchAcademicYearGET
+);
 
 export { academicYearRouter };

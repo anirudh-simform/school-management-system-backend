@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 import { Request } from "express";
 import { AddAcademicTermRequest } from "../models/types.js";
 const academicTermValidation = [
@@ -22,4 +22,8 @@ const academicTermValidation = [
         }),
 ];
 
-export { academicTermValidation };
+const academicTermQueryParamsValidation = [
+    query("year").isInt({ min: 2000, max: 3000 }),
+];
+
+export { academicTermValidation, academicTermQueryParamsValidation };

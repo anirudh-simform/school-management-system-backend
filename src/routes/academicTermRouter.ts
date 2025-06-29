@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { createAcademicTermPOST } from "../controllers/academicTerm/createAcademicTermPOST.js";
-import { academicTermValidation } from "../validation/validateAcademicTerm.js";
+import {
+    academicTermQueryParamsValidation,
+    academicTermValidation,
+} from "../validation/validateAcademicTerm.js";
 import { verifyAccessToken } from "../authentication/verifyAccessToken.js";
 import { editAcademicTermPUT } from "../controllers/academicTerm/editAcademicTermPUT.js";
 import { deleteAcademicTermDELETE } from "../controllers/academicTerm/deleteAcademicTermDELETE.js";
@@ -24,6 +27,11 @@ academicTermRouter.put(
 
 academicTermRouter.delete("/:id", verifyAccessToken, deleteAcademicTermDELETE);
 
-academicTermRouter.get("/", verifyAccessToken, searchAcademicTermGET);
+academicTermRouter.get(
+    "/",
+    verifyAccessToken,
+    academicTermQueryParamsValidation,
+    searchAcademicTermGET
+);
 
 export { academicTermRouter };
