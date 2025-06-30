@@ -13,6 +13,7 @@ import { gradeLevelRouter } from "./routes/gradeLevelRouter.js";
 import { academicYearRouter } from "./routes/academicYearRouter.js";
 import { academicTermRouter } from "./routes/academicTermRouter.js";
 
+
 import "dotenv/config";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use("/studentBatch", studentBatchRouter);
 app.use("/gradeLevel", gradeLevelRouter);
 app.use("academicYear", academicYearRouter);
 app.use("academicTerm", academicTermRouter);
+
 
 // Error handler
 app.use(handleError);
