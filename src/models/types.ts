@@ -89,6 +89,7 @@ export type AddStudentGroupRequest = {
 export type searchStudentGroupParams = {
     search: string;
     limit: 10;
+
 };
 
 declare module "jsonwebtoken" {

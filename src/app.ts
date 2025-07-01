@@ -33,6 +33,7 @@ app.use("academicYear", academicYearRouter);
 app.use("academicTerm", academicTermRouter);
 app.use("studentGroup", studentGroupRouter);
 
+
 // Error handler
 app.use(handleError);
 

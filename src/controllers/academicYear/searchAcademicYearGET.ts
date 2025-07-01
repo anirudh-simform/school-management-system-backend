@@ -6,9 +6,10 @@ import asyncHandler from "express-async-handler";
 
 const prisma = new PrismaClient();
 const searchAcademicYearGET = asyncHandler(async function searchAcademicYear(
-    req: Request<SearchAcademicYearParams, {}, {}>,
+    req: Request<{}, {}, {}>,
     res: Response
 ) {
+    const query = req.query as unknown as SearchAcademicYearParams;
     if (!req.user) {
         throw new UnauthorizedAccessError(
             "Only School Super Admins and Admins are allowed to create and edit courses"
@@ -25,8 +26,8 @@ const searchAcademicYearGET = asyncHandler(async function searchAcademicYear(
         const years = await prisma.academicYear.findMany({
             where: {
                 startDate: {
-                    gte: new Date(Number(req.params.year), 0, 1),
-                    lte: new Date(Number(req.params.year), 11, 31),
+                    gte: new Date(Number(query.year), 0, 1),
+                    lte: new Date(Number(query.year), 11, 31),
                 },
                 schoolId: req.user.schoolId,
             },
