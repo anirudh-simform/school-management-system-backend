@@ -18,7 +18,7 @@ import { studentGroupRouter } from "./routes/studentGroupRouter.js";
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:4200/", credentials: true }));
+app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -32,7 +32,6 @@ app.use("/gradeLevel", gradeLevelRouter);
 app.use("academicYear", academicYearRouter);
 app.use("academicTerm", academicTermRouter);
 app.use("studentGroup", studentGroupRouter);
-
 
 // Error handler
 app.use(handleError);

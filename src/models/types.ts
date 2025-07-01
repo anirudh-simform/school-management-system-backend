@@ -10,9 +10,16 @@ enum GroupType {
     CLASS,
     LAB,
 }
-
+export type PaginationQueryParams = {
+    pageSize: number;
+    pageNumber: number;
+};
 export type SearchAcademicYearParams = {
     year: string;
+};
+
+export type GetCoursesQueryParams = {
+    name: string;
 };
 
 export type SearchAcademicTermParams = SearchAcademicYearParams;
@@ -89,7 +96,6 @@ export type AddStudentGroupRequest = {
 export type searchStudentGroupParams = {
     search: string;
     limit: 10;
-
 };
 
 declare module "jsonwebtoken" {

@@ -84,6 +84,8 @@ model User {
   instructorProfile InstructorProfile?
 
   refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model StudentProfile {
@@ -97,6 +99,9 @@ model StudentProfile {
   attendance       Attendance[]
   assignmentGrades AssignmentGrade[]
   studentGroups    StudentGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model InstructorProfile {
@@ -106,6 +111,9 @@ model InstructorProfile {
   department     Department       @relation(fields: [departmentId], references: [id])
   departmentId   Int
   courseSchedule CourseSchedule[] @relation("Instructor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Department {
@@ -114,6 +122,9 @@ model Department {
   school      School              @relation(fields: [schoolId], references: [id])
   schoolId    Int
   instructors InstructorProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AcademicYear {
@@ -124,6 +135,9 @@ model AcademicYear {
   school       School         @relation(fields: [schoolId], references: [id])
   schoolId     Int
   AcademicTerm AcademicTerm[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AcademicTerm {
@@ -137,6 +151,9 @@ model AcademicTerm {
   schoolId       Int
 
   CourseSchedule CourseSchedule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GradeLevel {
@@ -147,6 +164,9 @@ model GradeLevel {
   StudentBatch StudentBatch[]
 
   StudentProfile StudentProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentBatch {
@@ -161,6 +181,9 @@ model StudentBatch {
   students     StudentProfile[]
   gradeLevel   GradeLevel       @relation(fields: [gradeLevelId], references: [id])
   gradeLevelId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentGroup {
@@ -174,7 +197,6 @@ model StudentGroup {
   assignments    Assignment[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-
 }
 
 model Course {
@@ -186,6 +208,9 @@ model Course {
   programs        Program[]
   courseSchedules CourseSchedule[]
   assignments     Assignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Program {
@@ -196,6 +221,9 @@ model Program {
   schoolId     Int
   courses      Course[]
   studentBatch StudentBatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CourseSchedule {

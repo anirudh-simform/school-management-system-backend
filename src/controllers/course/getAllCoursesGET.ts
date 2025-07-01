@@ -2,6 +2,11 @@ import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UnauthorizedAccessError } from "../../errors/errors.js";
+import {
+    GetCoursesQueryParams,
+    PaginationQueryParams,
+} from "../../models/types.js";
+import { getPaginationParams } from "../shared/pagination.utility.js";
 
 const prisma = new PrismaClient();
 
@@ -22,21 +27,41 @@ const getAllCoursesGET = asyncHandler(async function getAllCourses(
             );
         }
 
-        const courses = await prisma.course.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-            },
-        });
+        const query = req.query as unknown as GetCoursesQueryParams &
+            PaginationQueryParams;
 
-        res.status(200).json(
-            courses.map((course) => {
+        const { take, skip } = getPaginationParams(
+            query.pageNumber,
+            query.pageSize
+        );
+
+        const [courses, totalCount] = await Promise.all([
+            prisma.course.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                    name: query.name
+                        ? { contains: query.name, mode: "insensitive" }
+                        : undefined,
+                },
+
+                orderBy: query.name ? undefined : { createdAt: "desc" },
+
+                skip: skip,
+                take: take,
+            }),
+            prisma.course.count(),
+        ]);
+
+        res.status(200).json({
+            courses: courses.map((course) => {
                 return {
                     id: course.id,
                     name: course.name,
                     description: course.description,
                 };
-            })
-        );
+            }),
+            totalCount: totalCount,
+        });
     }
 });
 

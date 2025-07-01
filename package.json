@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "devStart": "node --import=tsx src/app.ts"
+        "devStart": "node --import=tsx src/app.ts",
+        "setup": "npx tsx src/initialization-scipts/script.init.ts"
     },
     "keywords": [],
     "author": "",
@@ -32,6 +33,7 @@
         "@types/jsonwebtoken": "^9.0.9",
         "@types/ms": "^2.1.0",
         "argon2": "^0.41.1",
+        "cookie": "^1.0.2",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
