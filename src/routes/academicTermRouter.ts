@@ -34,4 +34,5 @@ academicTermRouter.get(
     searchAcademicTermGET
 );
 
+
 export { academicTermRouter };

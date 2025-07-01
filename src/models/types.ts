@@ -83,7 +83,13 @@ export type AddAcademicTermRequest = {
 export type AddStudentGroupRequest = {
     name: string;
     studentProfiles: number[];
-    groupType: GroupType;
+    groupType: Prisma.StudentGroupUncheckedCreateInput["groupType"];
+};
+
+export type searchStudentGroupParams = {
+    search: string;
+    limit: 10;
+
 };
 
 declare module "jsonwebtoken" {

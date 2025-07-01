@@ -2,6 +2,7 @@ import { body } from "express-validator";
 import { Request } from "express";
 import { AddAcademicYearRequest } from "../models/types.js";
 import { academicTermQueryParamsValidation } from "./validateAcademicTerm.js";
+
 const academicYearValidation = [
     body("name").trim().notEmpty(),
     body("startDate").notEmpty().isDate(),
@@ -22,6 +23,8 @@ const academicYearValidation = [
         }),
 ];
 
+
 const academicYearQueryParamsValidation = academicTermQueryParamsValidation;
 
 export { academicYearValidation, academicYearQueryParamsValidation };
+

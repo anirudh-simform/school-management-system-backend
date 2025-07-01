@@ -22,8 +22,10 @@ const academicTermValidation = [
         }),
 ];
 
+
 const academicTermQueryParamsValidation = [
     query("year").isInt({ min: 2000, max: 3000 }),
 ];
 
 export { academicTermValidation, academicTermQueryParamsValidation };
+

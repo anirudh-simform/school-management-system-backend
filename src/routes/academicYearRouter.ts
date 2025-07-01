@@ -4,6 +4,7 @@ import {
     academicYearQueryParamsValidation,
     academicYearValidation,
 } from "../validation/validateAcademicYear.js";
+
 import { verifyAccessToken } from "../authentication/verifyAccessToken.js";
 import { editAcademicYearPUT } from "../controllers/academicYear/editAcademicYearPUT.js";
 import { deleteAcademicYearDELETE } from "../controllers/academicYear/deleteAcademicYearDELETE.js";
@@ -33,5 +34,6 @@ academicYearRouter.get(
     academicYearQueryParamsValidation,
     searchAcademicYearGET
 );
+
 
 export { academicYearRouter };
