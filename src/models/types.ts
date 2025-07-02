@@ -22,6 +22,8 @@ export type GetCoursesQueryParams = {
     name: string;
 };
 
+export type GetProgramQueryParams = GetCoursesQueryParams;
+
 export type SearchAcademicTermParams = SearchAcademicYearParams;
 
 export type SuperAdmin = Prisma.SuperAdminCreateInput;

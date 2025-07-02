@@ -48,8 +48,8 @@ const updateProgramPUT = asyncHandler(async function updateProgram(
                     name: req.body.name,
                     description: req.body.description,
                     courses: {
-                        set: req.body.courses.map((course) => {
-                            const id = Number(course.id);
+                        set: req.body.courses.map((courseId) => {
+                            const id = Number(courseId);
                             return { id: id };
                         }),
                     },
@@ -73,23 +73,6 @@ const updateProgramPUT = asyncHandler(async function updateProgram(
         res.status(200).json({
             message: "success",
             updateProgram: updatedProgram,
-            programs: (
-                await prisma.program.findMany({
-                    where: {
-                        schoolId: req.user.schoolId,
-                    },
-                    include: {
-                        courses: true,
-                    },
-                })
-            ).map((program) => {
-                return {
-                    id: program.id,
-                    name: program.name,
-                    description: program.description,
-                    courses: program.courses,
-                };
-            }),
         });
     }
 });
