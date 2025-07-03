@@ -19,7 +19,7 @@ export type SearchAcademicYearParams = {
 };
 
 export type GetCoursesQueryParams = {
-    name: string;
+    query: string;
 };
 
 export type GetProgramQueryParams = GetCoursesQueryParams;

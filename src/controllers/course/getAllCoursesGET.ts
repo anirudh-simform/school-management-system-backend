@@ -39,12 +39,12 @@ const getAllCoursesGET = asyncHandler(async function getAllCourses(
             prisma.course.findMany({
                 where: {
                     schoolId: req.user.schoolId,
-                    name: query.name
-                        ? { contains: query.name, mode: "insensitive" }
+                    name: query.query
+                        ? { contains: query.query, mode: "insensitive" }
                         : undefined,
                 },
 
-                orderBy: query.name ? undefined : { createdAt: "desc" },
+                orderBy: query.query ? undefined : { createdAt: "desc" },
 
                 skip: skip,
                 take: take,
@@ -53,7 +53,7 @@ const getAllCoursesGET = asyncHandler(async function getAllCourses(
         ]);
 
         res.status(200).json({
-            courses: courses.map((course) => {
+            fetch: courses.map((course) => {
                 return {
                     id: course.id,
                     name: course.name,
