@@ -52,6 +52,8 @@ model School {
   AcademicYear AcademicYear[]
 
   AcademicTerm AcademicTerm[]
+
+  GradeLevel GradeLevel[]
 }
 
 model SuperAdmin {
@@ -160,6 +162,8 @@ model GradeLevel {
   id         Int    @id @default(autoincrement())
   name       String
   levelOrder Int
+  school     School @relation(fields: [schoolId], references: [id])
+  schoolId   Int
 
   StudentBatch StudentBatch[]
 

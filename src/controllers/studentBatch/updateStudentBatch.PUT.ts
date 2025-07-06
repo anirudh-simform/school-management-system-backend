@@ -5,17 +5,16 @@ import {
     UnauthorizedAccessError,
     BadRequestError,
 } from "../../errors/errors.js";
-import { type UpdateItemRequestParams } from "../../models/types.js";
+import {
+    StudentBatchCreateDto,
+    type UpdateItemRequestParams,
+} from "../../models/types.js";
 import { type StudentBatch } from "../../../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
 const updateStudentBatchPUT = asyncHandler(async function updateStudentBatch(
-    req: Request<
-        UpdateItemRequestParams,
-        {},
-        Omit<StudentBatch, "id" | "schoolId">
-    >,
+    req: Request<UpdateItemRequestParams, {}, StudentBatchCreateDto>,
     res: Response
 ) {
     console.log("inside update student batch");
@@ -48,37 +47,19 @@ const updateStudentBatchPUT = asyncHandler(async function updateStudentBatch(
                 endDate: new Date(req.body.endDate),
                 gradeLevel: {
                     connect: {
-                        id: Number(req.body.gradeLevelId),
+                        id: Number(req.body.gradeLevel),
                     },
                 },
                 program: {
                     connect: {
-                        id: Number(req.body.programId),
+                        id: Number(req.body.program),
                     },
                 },
             },
         });
 
         res.status(200).json({
-            message: "success",
-            updatedStudentBatch: updatedStudentBatch,
-            studentBatches: await prisma.studentBatch.findMany({
-                where: {
-                    schoolId: req.user.schoolId,
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    startDate: true,
-                    endDate: true,
-                    program: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                },
-            }),
+            updated: updatedStudentBatch,
         });
     }
 });

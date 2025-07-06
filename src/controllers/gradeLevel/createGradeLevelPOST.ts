@@ -37,14 +37,17 @@ const createLevelGradePOST = asyncHandler(async function createLevelGrade(
         const studentGradeLevel = await prisma.gradeLevel.create({
             data: {
                 name: req.body.name,
-                levelOrder: req.body.levelOrder,
+                levelOrder: Number(req.body.levelOrder),
+                school: {
+                    connect: {
+                        id: Number(req.user.schoolId),
+                    },
+                },
             },
         });
 
         res.status(201).json({
-            message: "success",
-            createdStudentGradeLevel: studentGradeLevel,
-            studentGradeLevels: await prisma.gradeLevel.findMany(),
+            created: studentGradeLevel,
         });
     }
 });

@@ -22,6 +22,10 @@ export type GetCoursesQueryParams = {
     query: string;
 };
 
+export type BaseQueryParams = {
+    query: string;
+} & Partial<PaginationQueryParams>;
+
 export type GetProgramQueryParams = GetCoursesQueryParams;
 
 export type SearchAcademicTermParams = SearchAcademicYearParams;
@@ -98,6 +102,14 @@ export type AddStudentGroupRequest = {
 export type searchStudentGroupParams = {
     search: string;
     limit: 10;
+};
+
+export type StudentBatchCreateDto = {
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    program: number;
+    gradeLevel: number;
 };
 
 declare module "jsonwebtoken" {

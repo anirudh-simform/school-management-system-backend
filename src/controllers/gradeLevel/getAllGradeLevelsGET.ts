@@ -1,8 +1,10 @@
 import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
+import { BaseQueryParams } from "../../models/types.js";
 
 import { UnauthorizedAccessError } from "../../errors/errors.js";
+import { getPaginationParams } from "../shared/pagination.utility.js";
 
 const prisma = new PrismaClient();
 
@@ -23,9 +25,37 @@ const getAllLevelGradeGET = asyncHandler(async function getAllLevelGrade(
             );
         }
 
+        const query = req.query as unknown as BaseQueryParams;
+
+        const { take, skip } = getPaginationParams(
+            query.pageNumber,
+            query.pageSize
+        );
+
+        const [gradeLevels, totalCount] = await Promise.all([
+            await prisma.gradeLevel.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                    name: query.query
+                        ? { contains: query.query, mode: "insensitive" }
+                        : undefined,
+                },
+
+                orderBy: query.query ? undefined : { createdAt: "desc" },
+
+                skip: skip,
+                take: take,
+            }),
+            prisma.gradeLevel.count(),
+        ]);
+
         res.status(200).json({
-            message: "success",
-            studentGradeLevels: await prisma.gradeLevel.findMany(),
+            fetch: gradeLevels.map((level) => ({
+                id: level.id,
+                name: level.name,
+                levelOrder: level.levelOrder,
+            })),
+            totalCount: totalCount,
         });
     }
 });

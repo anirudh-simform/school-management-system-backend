@@ -39,14 +39,14 @@ const getAllProgramsGET = asyncHandler(async function getAllPrograms(
             await prisma.program.findMany({
                 where: {
                     schoolId: req.user.schoolId,
-                    name: query.name
-                        ? { contains: query.name, mode: "insensitive" }
+                    name: query.query
+                        ? { contains: query.query, mode: "insensitive" }
                         : undefined,
                 },
                 include: {
                     courses: true,
                 },
-                orderBy: query.name ? undefined : { createdAt: "desc" },
+                orderBy: query.query ? undefined : { createdAt: "desc" },
                 skip: skip,
                 take: take,
             }),
@@ -54,11 +54,15 @@ const getAllProgramsGET = asyncHandler(async function getAllPrograms(
         ]);
 
         res.status(200).json({
-            programs: programs.map((program) => ({
+            fetch: programs.map((program) => ({
                 id: program.id,
                 name: program.name,
                 description: program.description,
-                courses: program.courses,
+                courses: program.courses.map((course) => ({
+                    id: course.id,
+                    name: course.name,
+                    description: course.description,
+                })),
             })),
             totalCount: totalCount,
         });

@@ -41,9 +41,7 @@ const deleteLevelGradeDELETE = asyncHandler(async function deleteLevelGrade(
         });
 
         res.status(200).json({
-            message: "success",
-            UpdatedStudentGradeLevel: studentGradeLevel,
-            studentGradeLevels: await prisma.gradeLevel.findMany(),
+            deleted: studentGradeLevel,
         });
     }
 });
