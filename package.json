@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "devStart": "node --import=tsx src/app.ts",
+        "devStart": "node --watch --import=tsx src/app.ts",
         "setup": "npx tsx src/initialization-scipts/script.init.ts"
     },
     "keywords": [],

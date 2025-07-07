@@ -1,21 +1,18 @@
 import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
-import { type AddUserRequest } from "../../models/types.js";
-import {
-    BadRequestError,
-    UnauthorizedAccessError,
-} from "../../errors/errors.js";
+import { CreateUserDto } from "../../models/types.js";
+import { UnauthorizedAccessError } from "../../errors/errors.js";
 import * as argon2 from "argon2";
 const prisma = new PrismaClient();
 
 const addUserPost = asyncHandler(async function addUser(
-    req: Request<{}, {}, Omit<AddUserRequest, "schoolId">>,
+    req: Request<{}, {}, CreateUserDto, "schoolId">,
     res: Response
 ) {
     if (!req.user) {
         throw new UnauthorizedAccessError(
-            "Only Super School Admins and School Admins can add other users "
+            "Only Super School Admins and School Admins can add other users"
         );
     }
 
@@ -47,29 +44,20 @@ const addUserPost = asyncHandler(async function addUser(
 
         switch (req.body.role) {
             case "Instructor":
-                if (req.body.instructorProfile) {
-                    await prisma.user.create({
-                        data: {
-                            ...commonData,
-                            instructorProfile: {
-                                create: {
-                                    department: {
-                                        connect: {
-                                            id: Number(
-                                                req.body.instructorProfile
-                                                    .departmentId
-                                            ),
-                                        },
+                await prisma.user.create({
+                    data: {
+                        ...commonData,
+                        instructorProfile: {
+                            create: {
+                                department: {
+                                    connect: {
+                                        id: Number(req.body.department),
                                     },
                                 },
                             },
                         },
-                    });
-                } else {
-                    throw new BadRequestError(
-                        "Department is necessary when creating teachers"
-                    );
-                }
+                    },
+                });
                 break;
 
             case "Admin":
@@ -79,37 +67,25 @@ const addUserPost = asyncHandler(async function addUser(
                 break;
 
             case "Student":
-                if (req.body.studentProfile) {
-                    await prisma.user.create({
-                        data: {
-                            ...commonData,
-                            studentProfile: {
-                                create: {
-                                    studentBatch: {
-                                        connect: {
-                                            id: Number(
-                                                req.body.studentProfile
-                                                    .studentBatchId
-                                            ),
-                                        },
+                await prisma.user.create({
+                    data: {
+                        ...commonData,
+                        studentProfile: {
+                            create: {
+                                studentBatch: {
+                                    connect: {
+                                        id: Number(req.body.studentBatch),
                                     },
-                                    gradeLevel: {
-                                        connect: {
-                                            id: Number(
-                                                req.body.studentProfile
-                                                    .gradeLevelId
-                                            ),
-                                        },
+                                },
+                                gradeLevel: {
+                                    connect: {
+                                        id: Number(req.body.gradeLevel),
                                     },
                                 },
                             },
                         },
-                    });
-                } else {
-                    throw new BadRequestError(
-                        "Student Batch is necessary when creating students"
-                    );
-                }
+                    },
+                });
                 break;
         }
 

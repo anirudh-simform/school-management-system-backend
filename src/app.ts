@@ -15,6 +15,9 @@ import { academicTermRouter } from "./routes/academicTermRouter.js";
 
 import "dotenv/config";
 import { studentGroupRouter } from "./routes/studentGroupRouter.js";
+import { studentRouter } from "./routes/studentRouter.js";
+import { instructorRouter } from "./routes/InstructorRouter.js";
+import { adminRouter } from "./routes/AdminRouter.js";
 
 const app = express();
 
@@ -29,9 +32,12 @@ app.use("/course", courseRouter);
 app.use("/program", programRouter);
 app.use("/studentBatch", studentBatchRouter);
 app.use("/gradeLevel", gradeLevelRouter);
-app.use("academicYear", academicYearRouter);
-app.use("academicTerm", academicTermRouter);
-app.use("studentGroup", studentGroupRouter);
+app.use("/academicYear", academicYearRouter);
+app.use("/academicTerm", academicTermRouter);
+app.use("/studentGroup", studentGroupRouter);
+app.use("/student", studentRouter);
+app.use("/instructor", instructorRouter);
+app.use("/admin", adminRouter);
 
 // Error handler
 app.use(handleError);

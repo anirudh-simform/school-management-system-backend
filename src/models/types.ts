@@ -10,6 +10,9 @@ enum GroupType {
     CLASS,
     LAB,
 }
+
+type Roles = Prisma.UserCreateInput["role"];
+type Gender = Prisma.UserCreateInput["gender"];
 export type PaginationQueryParams = {
     pageSize: number;
     pageNumber: number;
@@ -82,6 +85,75 @@ export type AddUserRequest = Prisma.UserGetPayload<{
         schoolId: true;
     };
 }>;
+
+export type CreateUserDto =
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "SuperAdmin" | "Admin" | "SchoolSuperAdmin";
+          phone: string;
+      }
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "Student";
+          phone: string;
+          studentBatch: number;
+          gradeLevel: number;
+      }
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "Instructor";
+          phone: string;
+          department: number;
+      };
+
+export type CreateStudentDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    phone: string;
+    studentBatch: number;
+    gradeLevel: number;
+};
+
+export type CreateInstructorDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    phone: string;
+    department: number;
+};
+
+export type CreateAdminDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    role: "Admin" | "SchoolSuperAdmin";
+    phone: string;
+};
 
 export type AddAcademicYearRequest = {
     name: string;

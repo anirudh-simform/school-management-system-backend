@@ -8,7 +8,7 @@ import { validateUserLogin } from "../validation/validateUserLogin.js";
 const userRouter = Router();
 
 userRouter.post("/login", validateUserLogin, userLoginPost);
-userRouter.post("/", verifyAccessToken, addUserPost);
+// userRouter.post("/", verifyAccessToken, addUserPost);
 userRouter.post("/logout", verifyAccessToken, userLogoutPOST);
 userRouter.get("/me", verifyAccessToken, userAuthCheck);
 export { userRouter };
