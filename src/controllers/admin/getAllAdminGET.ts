@@ -37,24 +37,22 @@ const getAllAdminsGET = asyncHandler(async function getAllAdmin(
                     AND: [
                         { schoolId: req.user.schoolId },
                         {
-                            OR: [
-                                {
-                                    firstname: query.query
-                                        ? {
-                                              contains: query.query,
-                                              mode: "insensitive",
-                                          }
-                                        : undefined,
-                                },
-                                {
-                                    lastname: query.query
-                                        ? {
-                                              contains: query.query,
-                                              mode: "insensitive",
-                                          }
-                                        : undefined,
-                                },
-                            ],
+                            ...(query.query && {
+                                OR: [
+                                    {
+                                        firstname: {
+                                            contains: query.query,
+                                            mode: "insensitive",
+                                        },
+                                    },
+                                    {
+                                        lastname: {
+                                            contains: query.query,
+                                            mode: "insensitive",
+                                        },
+                                    },
+                                ],
+                            }),
                         },
                         {
                             OR: [
@@ -87,6 +85,7 @@ const getAllAdminsGET = asyncHandler(async function getAllAdmin(
                     dob: Admin.dob,
                     email: Admin.email,
                     phone: Admin.phone,
+                    role: Admin.role,
                 };
             }),
             totalCount: totalCount,

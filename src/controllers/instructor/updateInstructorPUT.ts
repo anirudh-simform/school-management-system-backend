@@ -23,14 +23,11 @@ const updateInstructorPUT = asyncHandler(async function updateInstructor(
             );
         }
 
-        const hashedPassword = await argon2.hash(req.body.password);
-
-        const commonData: Prisma.UserUncheckedCreateInput = {
+        const commonData: Partial<Prisma.UserUncheckedCreateInput> = {
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             gender: req.body.gender,
             email: req.body.email,
-            password: hashedPassword,
             phone: req.body.phone,
             schoolId: Number(req.user.schoolId),
             dob: new Date(req.body.dob),
@@ -46,7 +43,7 @@ const updateInstructorPUT = asyncHandler(async function updateInstructor(
             data: {
                 ...commonData,
                 instructorProfile: {
-                    create: {
+                    update: {
                         department: {
                             connect: {
                                 id: Number(req.body.department),

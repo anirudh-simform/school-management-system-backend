@@ -36,18 +36,29 @@ const getAllInstructorsGET = asyncHandler(async function getAllInstructor(
                 where: {
                     schoolId: req.user.schoolId,
                     role: "Instructor",
-                    OR: [
-                        {
-                            firstname: query.query
-                                ? { contains: query.query, mode: "insensitive" }
-                                : undefined,
+                    ...(query.query && {
+                        OR: [
+                            {
+                                firstname: {
+                                    contains: query.query,
+                                    mode: "insensitive",
+                                },
+                            },
+                            {
+                                lastname: {
+                                    contains: query.query,
+                                    mode: "insensitive",
+                                },
+                            },
+                        ],
+                    }),
+                },
+                include: {
+                    instructorProfile: {
+                        include: {
+                            department: true,
                         },
-                        {
-                            lastname: query.query
-                                ? { contains: query.query, mode: "insensitive" }
-                                : undefined,
-                        },
-                    ],
+                    },
                 },
 
                 orderBy: query.query ? undefined : { createdAt: "desc" },
@@ -62,6 +73,8 @@ const getAllInstructorsGET = asyncHandler(async function getAllInstructor(
             }),
         ]);
 
+        console.log(instructors);
+
         res.status(200).json({
             fetch: instructors.map((instructor) => {
                 return {
@@ -72,6 +85,10 @@ const getAllInstructorsGET = asyncHandler(async function getAllInstructor(
                     dob: instructor.dob,
                     email: instructor.email,
                     phone: instructor.phone,
+                    department: {
+                        id: instructor.instructorProfile?.departmentId,
+                        name: instructor.instructorProfile?.department.name,
+                    },
                 };
             }),
             totalCount: totalCount,

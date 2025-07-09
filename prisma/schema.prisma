@@ -18,7 +18,7 @@ datasource db {
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   token     String
   used      Boolean
@@ -93,7 +93,7 @@ model User {
 model StudentProfile {
   id               Int               @id @default(autoincrement())
   studentId        String            @unique
-  student          User              @relation(fields: [studentId], references: [id])
+  student          User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentBatch     StudentBatch      @relation(fields: [studentBatchId], references: [id])
   studentBatchId   Int
   gradeLevel       GradeLevel        @relation(fields: [gradeLevelId], references: [id])
@@ -109,7 +109,7 @@ model StudentProfile {
 model InstructorProfile {
   id             Int              @id @default(autoincrement())
   instructorId   String           @unique
-  instructor     User             @relation(fields: [instructorId], references: [id])
+  instructor     User             @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   department     Department       @relation(fields: [departmentId], references: [id])
   departmentId   Int
   courseSchedule CourseSchedule[] @relation("Instructor")

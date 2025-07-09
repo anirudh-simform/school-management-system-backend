@@ -46,13 +46,7 @@ const createDepartmentPOST = asyncHandler(async function createDepartment(
         });
 
         res.status(201).json({
-            message: "success",
-            departments: await prisma.department.findMany({
-                where: {
-                    schoolId: req.user.schoolId,
-                },
-            }),
-            createdDepartment: createdDepartment,
+            created: createdDepartment,
         });
     }
 });

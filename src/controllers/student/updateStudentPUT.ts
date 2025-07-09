@@ -23,7 +23,7 @@ const updateStudentPUT = asyncHandler(async function updateStudent(
             );
         }
 
-        const hashedPassword = await argon2.hash(req.body.password);
+        const hashedPassword = await argon2.hash("password");
 
         const commonData: Prisma.UserUncheckedCreateInput = {
             firstname: req.body.firstname,
@@ -46,7 +46,7 @@ const updateStudentPUT = asyncHandler(async function updateStudent(
             data: {
                 ...commonData,
                 studentProfile: {
-                    create: {
+                    update: {
                         studentBatch: {
                             connect: {
                                 id: Number(req.body.studentBatch),

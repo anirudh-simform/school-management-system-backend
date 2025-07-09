@@ -23,7 +23,7 @@ const createStudentPost = asyncHandler(async function createStudent(
             );
         }
 
-        const hashedPassword = await argon2.hash(req.body.password);
+        const hashedPassword = await argon2.hash("password");
 
         const commonData: Prisma.UserUncheckedCreateInput = {
             firstname: req.body.firstname,
