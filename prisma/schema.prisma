@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -54,6 +55,14 @@ model School {
   AcademicTerm AcademicTerm[]
 
   GradeLevel GradeLevel[]
+
+  Message Message[]
+
+  Conversation Conversation[]
+
+  ConversationParticipant ConversationParticipant[]
+
+  MessageRead MessageRead[]
 }
 
 model SuperAdmin {
@@ -88,6 +97,12 @@ model User {
   refreshTokens RefreshToken[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  conversationParticipant ConversationParticipant[]
+
+  message Message[]
+
+  messagesRead MessageRead[]
 }
 
 model StudentProfile {
@@ -301,6 +316,76 @@ model AssignmentGrade {
   schoolId         Int
   marksObtained    Int            @default(0)
 }
+
+// Chat Messaging
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+
+  messageRead MessageRead[]
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Conversation {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  isGroup       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  messages Message[]
+
+  participants ConversationParticipant[]
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+}
+
+model ConversationParticipant {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+
+  joinedAt DateTime @default(now())
+  isAdmin  Boolean  @default(false)
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+
+  @@unique([conversationId, userId])
+}
+
+model MessageRead {
+  id        Int     @id @default(autoincrement())
+  messageId Int
+  message   Message @relation(fields: [messageId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+
+  @@unique([messageId, userId])
+}
+
+// Enums
 
 enum GroupType {
   CLASS

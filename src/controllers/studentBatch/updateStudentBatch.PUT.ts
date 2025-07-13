@@ -9,7 +9,6 @@ import {
     StudentBatchCreateDto,
     type UpdateItemRequestParams,
 } from "../../models/types.js";
-import { type StudentBatch } from "../../../generated/prisma/index.js";
 
 const prisma = new PrismaClient();
 
