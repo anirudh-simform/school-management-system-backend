@@ -23,7 +23,7 @@ export const getAllUsersAndConversationsGET = asyncHandler(
 
         const { offset, limit } = { offset: skip, limit: take };
 
-        if ((req.user && !req.user.id) || !req.user?.schoolId) {
+        if ((req.user && !req.user.id) || !req.user?.schoolId || !req.user.id) {
             throw new Error("Unauthorized access");
         }
 

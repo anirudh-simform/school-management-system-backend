@@ -23,6 +23,7 @@ import { onConnection } from "./web-socket-controllers/onConnection.js";
 import { verifyAccessTokenWebSocket } from "./authentication/verifyAccessTokenWebSocket.js";
 
 import "dotenv/config";
+import { conversationRouter } from "./routes/conversationRouter.js";
 
 const app = express();
 const server = createServer(app);
@@ -55,6 +56,7 @@ app.use("/studentGroup", studentGroupRouter);
 app.use("/student", studentRouter);
 app.use("/instructor", instructorRouter);
 app.use("/admin", adminRouter);
+app.use("/conversation", conversationRouter);
 
 // Error handler
 app.use(handleError);

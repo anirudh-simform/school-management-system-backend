@@ -15,8 +15,34 @@ export const createConversationPOST = asyncHandler(
             if (!req.user.id) {
                 throw new Error("User not authenticated");
             }
+
             const participants = [...new Set([...participantIds, req.user.id])];
             const participantsList = participants.map((id) => ({ id }));
+
+            const [user1, user2] = participants;
+
+            const prevConversation = await prisma.conversation.findFirst({
+                where: {
+                    isGroup: false,
+                    participants: {
+                        every: {
+                            OR: [{ userId: user1 }, { userId: user2 }],
+                        },
+                    },
+                },
+                include: {
+                    participants: true,
+                },
+            });
+
+            if (prevConversation) {
+                console.log(
+                    "conversation between the ids",
+                    prevConversation.participants.toString(),
+                    "already exists"
+                );
+                return;
+            }
 
             const inclusionsInResponse = {
                 participants: {
@@ -43,6 +69,11 @@ export const createConversationPOST = asyncHandler(
                                 connect: participant,
                             },
                         })),
+                    },
+                    school: {
+                        connect: {
+                            id: req.user.schoolId,
+                        },
                     },
                 },
 

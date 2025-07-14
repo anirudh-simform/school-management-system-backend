@@ -23,9 +23,10 @@ export const getAllConversationsGET = asyncHandler(
             where: {
                 participants: {
                     some: {
-                        userId: req.user?.id,
+                        userId: req.user!.id!,
                     },
                 },
+                schoolId: req.user!.schoolId!,
             },
 
             skip,
@@ -36,6 +37,16 @@ export const getAllConversationsGET = asyncHandler(
             },
 
             include: {
+                participants: {
+                    include: {
+                        user: {
+                            select: {
+                                firstname: true,
+                                lastname: true,
+                            },
+                        },
+                    },
+                },
                 messages: {
                     orderBy: {
                         createdAt: "desc",
