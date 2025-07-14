@@ -4,7 +4,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "devStart": "node --watch --import=tsx src/app.ts",
+        "setup": "npx tsx src/initialization-scipts/script.init.ts"
     },
     "keywords": [],
     "author": "",
@@ -12,18 +14,34 @@
     "description": "",
     "devDependencies": {
         "@eslint/js": "^9.23.0",
+        "@types/cookie": "^0.6.0",
         "@types/express": "^5.0.1",
         "@types/node": "^22.13.14",
         "eslint": "^9.23.0",
         "eslint-config-prettier": "^10.1.1",
         "express": "^4.21.2",
+        "pino-pretty": "^13.0.0",
         "prettier": "3.5.3",
-        "prisma": "^6.5.0",
+        "prisma": "^6.8.2",
         "tsx": "^4.19.3",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.28.0"
     },
     "dependencies": {
-        "@prisma/client": "^6.5.0"
+        "@prisma/client": "^6.8.2",
+        "@types/cookie-parser": "^1.4.8",
+        "@types/cors": "^2.8.17",
+        "@types/jsonwebtoken": "^9.0.9",
+        "@types/ms": "^2.1.0",
+        "argon2": "^0.41.1",
+        "cookie": "^1.0.2",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.7",
+        "express-async-handler": "^1.2.0",
+        "express-validator": "^7.2.1",
+        "jsonwebtoken": "^9.0.2",
+        "pino": "^9.6.0",
+        "socket.io": "^4.8.1"
     }
 }
