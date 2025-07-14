@@ -1,4 +1,4 @@
-import Router from "express";
+import Router, { Response, Request } from "express";
 import { userLoginPost } from "../controllers/user/userLoginPOST.js";
 import { addUserPost } from "../controllers/user/addUserPOST.js";
 import { verifyAccessToken } from "../authentication/verifyAccessToken.js";
@@ -8,7 +8,12 @@ import { validateUserLogin } from "../validation/validateUserLogin.js";
 const userRouter = Router();
 
 userRouter.post("/login", validateUserLogin, userLoginPost);
-userRouter.post("/", verifyAccessToken, addUserPost);
+// userRouter.post("/", verifyAccessToken, addUserPost);
 userRouter.post("/logout", verifyAccessToken, userLogoutPOST);
 userRouter.get("/me", verifyAccessToken, userAuthCheck);
+userRouter.get("/refresh", verifyAccessToken, (req: Request, res: Response) => {
+    res.json({
+        message: "valid token",
+    });
+});
 export { userRouter };

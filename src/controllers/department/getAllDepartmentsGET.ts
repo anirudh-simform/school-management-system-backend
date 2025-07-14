@@ -2,11 +2,16 @@ import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UnauthorizedAccessError } from "../../errors/errors.js";
+import {
+    GetProgramQueryParams,
+    PaginationQueryParams,
+} from "../../models/types.js";
+import { getPaginationParams } from "../shared/pagination.utility.js";
 
 const prisma = new PrismaClient();
 
 const getAllDepartmentsGET = asyncHandler(async function getAllDepartments(
-    req: Request<{}, {}, Prisma.DepartmentCreateInput>,
+    req: Request<{}, {}, {}>,
     res: Response
 ) {
     if (!req.user) {
@@ -22,13 +27,36 @@ const getAllDepartmentsGET = asyncHandler(async function getAllDepartments(
             );
         }
 
-        const departments = await prisma.department.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-            },
-        });
+        const query = req.query as unknown as GetProgramQueryParams &
+            PaginationQueryParams;
 
-        res.status(200).json(departments);
+        const { take, skip } = getPaginationParams(
+            query.pageNumber,
+            query.pageSize
+        );
+
+        const [departments, totalCount] = await Promise.all([
+            prisma.department.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                    name: query.query
+                        ? { contains: query.query, mode: "insensitive" }
+                        : undefined,
+                },
+                orderBy: query.query ? undefined : { createdAt: "desc" },
+                skip: skip,
+                take: take,
+            }),
+            prisma.department.count(),
+        ]);
+
+        res.status(200).json({
+            fetch: departments.map((department) => ({
+                id: department.id,
+                name: department.name,
+            })),
+            totalCount: totalCount,
+        });
     }
 });
 

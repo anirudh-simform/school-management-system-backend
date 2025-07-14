@@ -2,6 +2,8 @@ import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UnauthorizedAccessError } from "../../errors/errors.js";
+import { BaseQueryParams } from "../../models/types.js";
+import { getPaginationParams } from "../shared/pagination.utility.js";
 
 const prisma = new PrismaClient();
 
@@ -26,30 +28,52 @@ const getAllStudentBatchesGET = asyncHandler(
                 );
             }
 
-            const studentBatches = await prisma.studentBatch.findMany({
-                where: {
-                    schoolId: req.user.schoolId,
-                },
-                include: {
-                    program: true,
-                },
-            });
+            const query = req.query as unknown as BaseQueryParams;
 
-            res.status(200).json(
-                studentBatches.map((studentBatch) => {
+            const { take, skip } = getPaginationParams(
+                query.pageNumber,
+                query.pageSize
+            );
+
+            const [studentBatches, totalCount] = await Promise.all([
+                await prisma.studentBatch.findMany({
+                    include: {
+                        program: true,
+                        gradeLevel: true,
+                    },
+                    where: {
+                        schoolId: req.user.schoolId,
+                        name: query.query
+                            ? { contains: query.query, mode: "insensitive" }
+                            : undefined,
+                    },
+                    orderBy: query.query ? undefined : { createdAt: "desc" },
+
+                    skip: skip,
+                    take: take,
+                }),
+                prisma.studentBatch.count(),
+            ]);
+
+            res.status(200).json({
+                fetch: studentBatches.map((studentBatch) => {
                     return {
                         id: studentBatch.id,
                         name: studentBatch.name,
                         startDate: studentBatch.startDate,
                         endDate: studentBatch.endDate,
-                        gradeLevel: studentBatch.gradeLevelId,
+                        gradeLevel: {
+                            id: studentBatch.gradeLevelId,
+                            name: studentBatch.gradeLevel.name,
+                        },
                         program: {
                             id: studentBatch.program.id,
                             name: studentBatch.program.name,
                         },
                     };
-                })
-            );
+                }),
+                totalCount: totalCount,
+            });
         }
     }
 );

@@ -14,7 +14,7 @@ function verifyJwtPromisified(
     return new Promise((res, rej) => {
         jwt.verify(token, secret, (err, decoded) => {
             if (err) {
-                rej(err.name);
+                rej(err);
                 return;
             } else {
                 res(decoded);

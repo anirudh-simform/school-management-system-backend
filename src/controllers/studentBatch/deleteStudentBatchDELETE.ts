@@ -33,25 +33,7 @@ const deleteStudentBatchDELETE = asyncHandler(async function deleteStudentBatch(
         });
 
         res.status(200).json({
-            message: "success",
-            deletedStudentBatch: deletedStudentBatch,
-            studentBatches: await prisma.studentBatch.findMany({
-                where: {
-                    schoolId: req.user.schoolId,
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    startDate: true,
-                    endDate: true,
-                    program: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                },
-            }),
+            deleted: deletedStudentBatch,
         });
     }
 });

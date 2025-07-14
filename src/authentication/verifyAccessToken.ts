@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import {
     AuthTokenNotFoundError,
     EnvironmentVariableNotFoundError,
@@ -15,6 +16,8 @@ declare module "express-serve-static-core" {
         user?: JwtPayload | string;
     }
 }
+
+const { TokenExpiredError } = jwt;
 
 // TODO: Remove all the console.log's
 
@@ -65,7 +68,7 @@ const verifyAccessToken = asyncHandler(async function verifyAccessToken(
             throw new Error("An unexpected error occurred");
         }
     } catch (error) {
-        if (error == "TokenExpiredError") {
+        if (error instanceof TokenExpiredError) {
             await processRefreshToken(req, res, next);
             return;
         } else {

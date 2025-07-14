@@ -48,14 +48,12 @@ const updateLevelGradePUT = asyncHandler(async function updateLevelGrade(
             },
             data: {
                 name: req.body.name,
-                levelOrder: req.body.levelOrder,
+                levelOrder: Number(req.body.levelOrder),
             },
         });
 
         res.status(200).json({
-            message: "success",
-            UpdatedStudentGradeLevel: studentGradeLevel,
-            studentGradeLevels: await prisma.gradeLevel.findMany(),
+            updated: studentGradeLevel,
         });
     }
 });

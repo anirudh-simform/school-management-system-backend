@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -18,7 +19,7 @@ datasource db {
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   token     String
   used      Boolean
@@ -52,6 +53,16 @@ model School {
   AcademicYear AcademicYear[]
 
   AcademicTerm AcademicTerm[]
+
+  GradeLevel GradeLevel[]
+
+  Message Message[]
+
+  Conversation Conversation[]
+
+  ConversationParticipant ConversationParticipant[]
+
+  MessageRead MessageRead[]
 }
 
 model SuperAdmin {
@@ -84,12 +95,20 @@ model User {
   instructorProfile InstructorProfile?
 
   refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  conversationParticipant ConversationParticipant[]
+
+  message Message[]
+
+  messagesRead MessageRead[]
 }
 
 model StudentProfile {
   id               Int               @id @default(autoincrement())
   studentId        String            @unique
-  student          User              @relation(fields: [studentId], references: [id])
+  student          User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentBatch     StudentBatch      @relation(fields: [studentBatchId], references: [id])
   studentBatchId   Int
   gradeLevel       GradeLevel        @relation(fields: [gradeLevelId], references: [id])
@@ -97,15 +116,21 @@ model StudentProfile {
   attendance       Attendance[]
   assignmentGrades AssignmentGrade[]
   studentGroups    StudentGroup[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model InstructorProfile {
   id             Int              @id @default(autoincrement())
   instructorId   String           @unique
-  instructor     User             @relation(fields: [instructorId], references: [id])
+  instructor     User             @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   department     Department       @relation(fields: [departmentId], references: [id])
   departmentId   Int
   courseSchedule CourseSchedule[] @relation("Instructor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Department {
@@ -114,6 +139,9 @@ model Department {
   school      School              @relation(fields: [schoolId], references: [id])
   schoolId    Int
   instructors InstructorProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AcademicYear {
@@ -124,6 +152,9 @@ model AcademicYear {
   school       School         @relation(fields: [schoolId], references: [id])
   schoolId     Int
   AcademicTerm AcademicTerm[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AcademicTerm {
@@ -137,16 +168,24 @@ model AcademicTerm {
   schoolId       Int
 
   CourseSchedule CourseSchedule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GradeLevel {
   id         Int    @id @default(autoincrement())
   name       String
   levelOrder Int
+  school     School @relation(fields: [schoolId], references: [id])
+  schoolId   Int
 
   StudentBatch StudentBatch[]
 
   StudentProfile StudentProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentBatch {
@@ -161,6 +200,9 @@ model StudentBatch {
   students     StudentProfile[]
   gradeLevel   GradeLevel       @relation(fields: [gradeLevelId], references: [id])
   gradeLevelId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentGroup {
@@ -174,7 +216,6 @@ model StudentGroup {
   assignments    Assignment[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-
 }
 
 model Course {
@@ -186,6 +227,9 @@ model Course {
   programs        Program[]
   courseSchedules CourseSchedule[]
   assignments     Assignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Program {
@@ -196,6 +240,9 @@ model Program {
   schoolId     Int
   courses      Course[]
   studentBatch StudentBatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CourseSchedule {
@@ -269,6 +316,74 @@ model AssignmentGrade {
   schoolId         Int
   marksObtained    Int            @default(0)
 }
+
+// Chat Messaging
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+
+  messageRead MessageRead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  School    School?  @relation(fields: [schoolId], references: [id])
+  schoolId  Int?
+}
+
+model Conversation {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  isGroup       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  messages Message[]
+
+  participants ConversationParticipant[]
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+}
+
+model ConversationParticipant {
+  id Int @id @default(autoincrement())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+
+  joinedAt DateTime @default(now())
+  isAdmin  Boolean  @default(false)
+  School   School?  @relation(fields: [schoolId], references: [id])
+  schoolId Int?
+
+  @@unique([conversationId, userId])
+}
+
+model MessageRead {
+  id        Int     @id @default(autoincrement())
+  messageId Int
+  message   Message @relation(fields: [messageId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  school   School @relation(fields: [schoolId], references: [id])
+  schoolId Int
+
+  @@unique([messageId, userId])
+}
+
+// Enums
 
 enum GroupType {
   CLASS

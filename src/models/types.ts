@@ -11,9 +11,25 @@ enum GroupType {
     LAB,
 }
 
+type Roles = Prisma.UserCreateInput["role"];
+type Gender = Prisma.UserCreateInput["gender"];
+export type PaginationQueryParams = {
+    pageSize: number;
+    pageNumber: number;
+};
 export type SearchAcademicYearParams = {
     year: string;
 };
+
+export type GetCoursesQueryParams = {
+    query: string;
+};
+
+export type BaseQueryParams = {
+    query: string;
+} & Partial<PaginationQueryParams>;
+
+export type GetProgramQueryParams = GetCoursesQueryParams;
 
 export type SearchAcademicTermParams = SearchAcademicYearParams;
 
@@ -70,6 +86,75 @@ export type AddUserRequest = Prisma.UserGetPayload<{
     };
 }>;
 
+export type CreateUserDto =
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "SuperAdmin" | "Admin" | "SchoolSuperAdmin";
+          phone: string;
+      }
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "Student";
+          phone: string;
+          studentBatch: number;
+          gradeLevel: number;
+      }
+    | {
+          firstname: string;
+          lastname: string;
+          email: string;
+          password: string;
+          dob: Date;
+          gender: "Male" | "Female";
+          role: "Instructor";
+          phone: string;
+          department: number;
+      };
+
+export type CreateStudentDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    phone: string;
+    studentBatch: number;
+    gradeLevel: number;
+};
+
+export type CreateInstructorDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    phone: string;
+    department: number;
+};
+
+export type CreateAdminDto = {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    dob: Date;
+    gender: Gender;
+    role: "Admin" | "SchoolSuperAdmin";
+    phone: string;
+};
+
 export type AddAcademicYearRequest = {
     name: string;
     startDate: string;
@@ -89,7 +174,14 @@ export type AddStudentGroupRequest = {
 export type searchStudentGroupParams = {
     search: string;
     limit: 10;
+};
 
+export type StudentBatchCreateDto = {
+    name: string;
+    startDate: Date;
+    endDate: Date;
+    program: number;
+    gradeLevel: number;
 };
 
 declare module "jsonwebtoken" {

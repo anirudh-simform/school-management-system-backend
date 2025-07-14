@@ -31,13 +31,14 @@ const createProgramPOST = asyncHandler(async function createProgram(
         };
 
         if (req.body.courses.length > 0) {
+            console.log(req.body.courses);
             createdProgram = await prisma.program.create({
                 data: {
                     name: req.body.name,
                     description: req.body.description,
                     courses: {
-                        connect: req.body.courses.map((course) => {
-                            const id = Number(course.id);
+                        connect: req.body.courses.map((courseId) => {
+                            const id = Number(courseId);
                             return { id: id };
                         }),
                     },
@@ -68,23 +69,6 @@ const createProgramPOST = asyncHandler(async function createProgram(
                 name: createdProgram.name,
                 description: createdProgram.description,
             },
-            programs: (
-                await prisma.program.findMany({
-                    where: {
-                        schoolId: req.user.schoolId,
-                    },
-                    include: {
-                        courses: true,
-                    },
-                })
-            ).map((program) => {
-                return {
-                    id: program.id,
-                    name: program.name,
-                    description: program.description,
-                    courses: program.courses,
-                };
-            }),
         });
     }
 });

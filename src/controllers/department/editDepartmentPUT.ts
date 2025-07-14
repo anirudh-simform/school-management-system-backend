@@ -43,7 +43,7 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
             );
         }
 
-        const createdDepartment = await prisma.department.update({
+        const updatedDepartment = await prisma.department.update({
             data: {
                 name: req.body.name,
             },
@@ -53,13 +53,7 @@ const EditDepartmentPOST = asyncHandler(async function editDepartment(
         });
 
         res.status(200).json({
-            message: "success",
-            departments: await prisma.department.findMany({
-                where: {
-                    schoolId: Number(req.user.schoolId),
-                },
-            }),
-            createdDepartment: createdDepartment,
+            updated: updatedDepartment,
         });
     }
 });

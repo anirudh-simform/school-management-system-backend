@@ -1,6 +1,8 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 import { handleError } from "./middlewares/errorHandling.js";
 import { superAdminRouter } from "./routes/superAdminRouter.js";
@@ -12,13 +14,32 @@ import { studentBatchRouter } from "./routes/studentBatchRouter.js";
 import { gradeLevelRouter } from "./routes/gradeLevelRouter.js";
 import { academicYearRouter } from "./routes/academicYearRouter.js";
 import { academicTermRouter } from "./routes/academicTermRouter.js";
+import { studentGroupRouter } from "./routes/studentGroupRouter.js";
+import { studentRouter } from "./routes/studentRouter.js";
+import { instructorRouter } from "./routes/InstructorRouter.js";
+import { adminRouter } from "./routes/AdminRouter.js";
+import { onConnection } from "./web-socket-controllers/onConnection.js";
+
+import { verifyAccessTokenWebSocket } from "./authentication/verifyAccessTokenWebSocket.js";
 
 import "dotenv/config";
-import { studentGroupRouter } from "./routes/studentGroupRouter.js";
+import { conversationRouter } from "./routes/conversationRouter.js";
 
 const app = express();
+const server = createServer(app);
+export const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:4200",
+        credentials: true,
+    },
+});
 
-app.use(cors({ origin: "http://localhost:4200/", credentials: true }));
+// Web Socket
+io.use(verifyAccessTokenWebSocket);
+io.on("connection", onConnection);
+
+// Http
+app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -29,10 +50,13 @@ app.use("/course", courseRouter);
 app.use("/program", programRouter);
 app.use("/studentBatch", studentBatchRouter);
 app.use("/gradeLevel", gradeLevelRouter);
-app.use("academicYear", academicYearRouter);
-app.use("academicTerm", academicTermRouter);
-app.use("studentGroup", studentGroupRouter);
-
+app.use("/academicYear", academicYearRouter);
+app.use("/academicTerm", academicTermRouter);
+app.use("/studentGroup", studentGroupRouter);
+app.use("/student", studentRouter);
+app.use("/instructor", instructorRouter);
+app.use("/admin", adminRouter);
+app.use("/conversation", conversationRouter);
 
 // Error handler
 app.use(handleError);
@@ -40,7 +64,7 @@ app.use(handleError);
 const PORT = process.env.PORT;
 
 if (PORT) {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`server started on port ${String(PORT)} `);
     });
 }

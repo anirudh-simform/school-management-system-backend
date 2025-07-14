@@ -6,12 +6,12 @@ import {
     UnauthorizedAccessError,
     ValidationError,
 } from "../../errors/errors.js";
-import { type StudentBatch } from "../../../generated/prisma/index.js";
+import { StudentBatchCreateDto } from "../../models/types.js";
 
 const prisma = new PrismaClient();
 
 const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
-    req: Request<{}, {}, Omit<StudentBatch, "id" | "schoolId">>,
+    req: Request<{}, {}, StudentBatchCreateDto>,
     res: Response
 ) {
     const errors = validationResult(req);
@@ -43,48 +43,24 @@ const createStudentBatchPOST = asyncHandler(async function createStudentBatch(
                 endDate: new Date(req.body.endDate),
                 gradeLevel: {
                     connect: {
-                        id: Number(req.body.gradeLevelId),
+                        id: Number(req.body.gradeLevel),
                     },
                 },
                 program: {
                     connect: {
-                        id: Number(req.body.programId),
+                        id: Number(req.body.program),
                     },
                 },
                 school: {
                     connect: {
-                        id: req.user.schoolId,
+                        id: Number(req.user.schoolId),
                     },
                 },
             },
         });
 
         res.status(201).json({
-            message: "success",
-            studentBatch: studentBatch,
-            studentBatches: await prisma.studentBatch.findMany({
-                where: {
-                    schoolId: req.user.schoolId,
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    startDate: true,
-                    endDate: true,
-                    gradeLevel: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                    program: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
-                },
-            }),
+            created: studentBatch,
         });
     }
 });

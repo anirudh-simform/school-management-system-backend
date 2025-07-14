@@ -2,6 +2,11 @@ import { PrismaClient, Prisma } from "../../../generated/prisma/index.js";
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UnauthorizedAccessError } from "../../errors/errors.js";
+import {
+    GetProgramQueryParams,
+    PaginationQueryParams,
+} from "../../models/types.js";
+import { getPaginationParams } from "../shared/pagination.utility.js";
 
 const prisma = new PrismaClient();
 
@@ -22,25 +27,45 @@ const getAllProgramsGET = asyncHandler(async function getAllPrograms(
             );
         }
 
-        const programs = await prisma.program.findMany({
-            where: {
-                schoolId: req.user.schoolId,
-            },
-            include: {
-                courses: true,
-            },
-        });
+        const query = req.query as unknown as GetProgramQueryParams &
+            PaginationQueryParams;
 
-        res.status(200).json(
-            programs.map((program) => {
-                return {
-                    id: program.id,
-                    name: program.name,
-                    description: program.description,
-                    courses: program.courses,
-                };
-            })
+        const { take, skip } = getPaginationParams(
+            query.pageNumber,
+            query.pageSize
         );
+
+        const [programs, totalCount] = await Promise.all([
+            await prisma.program.findMany({
+                where: {
+                    schoolId: req.user.schoolId,
+                    name: query.query
+                        ? { contains: query.query, mode: "insensitive" }
+                        : undefined,
+                },
+                include: {
+                    courses: true,
+                },
+                orderBy: query.query ? undefined : { createdAt: "desc" },
+                skip: skip,
+                take: take,
+            }),
+            await prisma.program.count(),
+        ]);
+
+        res.status(200).json({
+            fetch: programs.map((program) => ({
+                id: program.id,
+                name: program.name,
+                description: program.description,
+                courses: program.courses.map((course) => ({
+                    id: course.id,
+                    name: course.name,
+                    description: course.description,
+                })),
+            })),
+            totalCount: totalCount,
+        });
     }
 });
 

@@ -28,6 +28,7 @@ const processRefreshToken = asyncHandler(async function processToken(
     next: NextFunction
 ) {
     const oldRefreshToken: string = req.cookies.refreshToken;
+    console.log("inside process refresh token");
 
     if (!oldRefreshToken) {
         throw new AuthTokenNotFoundError(
